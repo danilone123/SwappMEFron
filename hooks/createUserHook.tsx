@@ -1,6 +1,6 @@
 
   import { useMutation } from '@tanstack/react-query';
-  import { createUser, CreateUserResponse, refreshToken, CreateTokenResponse } from '../.expo/services/CreateUserService'
+  import { createUser, CreateUserResponse, refreshToken, CreateTokenResponse } from '../services/CreateUserService'
 
   interface CreateUserInput {
     email: string;

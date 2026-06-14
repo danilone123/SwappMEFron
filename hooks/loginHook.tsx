@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { login, LoginPayload, CreateUserResponse } from '../.expo/services/CreateUserService'
+import { login, LoginPayload, CreateUserResponse } from '../services/CreateUserService'
 
 export const loginUser = () => {
     return useMutation<CreateUserResponse, Error, LoginPayload>({

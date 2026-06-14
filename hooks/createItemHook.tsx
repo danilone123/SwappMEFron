@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { createItem, CreateItemPayload, CreateItemResponse, getItems, ItemResponse, updateImage, getMyItems, OfferAItem, OfferAItemStruct } from '../.expo/services/CreateUserService'
+import { createItem, CreateItemPayload, CreateItemResponse, getItems, ItemResponse, updateImage, getMyItems, OfferAItem, OfferAItemStruct } from '../services/CreateUserService'
 
 export const createNewItem = () => {
     return useMutation<CreateItemResponse, Error, CreateItemPayload>({
