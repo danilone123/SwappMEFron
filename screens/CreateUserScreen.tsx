@@ -11,8 +11,9 @@ import {
   ActivityIndicator
 } from 'react-native';
 
-import { useLogin } from '../hooks/createUserHook';
+import { useLogin, refreshTokenNew } from '../hooks/createUserHook';
 import { LoginScreenProps } from '../screens/loginScreens'
+import  { getAccessToken, getRefreshToken, saveTokens } from '../servicesSecure/authStorage'
 
 const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
     const [email, setEmail] = useState<string>('');
@@ -21,9 +22,10 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
     const [fullName, setFullName] = useState<string>('');
     const [nickName, setNickName] = useState<string>('');
     const loginMutation = useLogin();
+    const refreshTokenMutation = refreshTokenNew();
 
     const handleLogin = () => {
-        console.log(email)
+       
         loginMutation.mutate({
           email: email,
           password: password,
@@ -31,10 +33,12 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
           nickname: nickName,
           phone: phoneNumber
         }, {
-            onSuccess: (response) => {
+            onSuccess: async (response) => {
               console.log('User created:', response.user);
-              console.log('Tokens:', response.jwtToken);
-              //setIsLoggedIn(true)
+              console.log('refresh Tokens:', response.refreshToken);
+              await saveTokens(response.jwtToken, response.refreshToken) 
+              setIsLoggedIn(true)
+              
             }, 
             onError: (error) => {
                 console.log(error);

@@ -10,6 +10,9 @@ import {
   Platform,
 } from 'react-native';
 
+import { loginUser } from '../hooks/loginHook';
+import  { saveTokens } from '../servicesSecure/authStorage'
+
 export type LoginScreenProps = {
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   navigation: any;
@@ -18,6 +21,7 @@ export type LoginScreenProps = {
 const LoginScreen = ({ setIsLoggedIn, navigation }: LoginScreenProps) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const loginMutation = loginUser();
 
   const handleCreateUser = () => {
     console.log("create USER Clicked::::::");
@@ -27,17 +31,30 @@ const LoginScreen = ({ setIsLoggedIn, navigation }: LoginScreenProps) => {
 
   const handleLogin = () => {
     console.log("Login button pressed");
-    if (!email || !password) {
-        
-       
-         console.log("emIL OR password is empty::::::");
-         alert("Login clicked");
-      //Alert.alert('Error', 'Please fill in all fields');
+    if (!email || !password) {  
+         //alert("Login clicked");
+         Alert.alert('Error', 'Please fill in all fields');
       return;
     }
 
-    setIsLoggedIn(true)
-    Alert.alert('Success', `Email: ${email}`);
+      loginMutation.mutate({
+       userName: email,
+        password: password,
+      }, {
+        onSuccess: async (response) => {
+          console.log('User created:', response.user);
+          console.log('refresh Tokens:', response.refreshToken);
+          console.log('Token access:', response.jwtToken);
+          await saveTokens(response.jwtToken, response.refreshToken) 
+          setIsLoggedIn(true)
+          
+        }, 
+        onError: (error) => {
+            //console.log(error);
+            Alert.alert('Error', `There is an error with your account. Please try again.`);
+        }
+      });
+    //Alert.alert('Success', `Email: ${email}`);
   };
 
   return (
@@ -45,7 +62,13 @@ const LoginScreen = ({ setIsLoggedIn, navigation }: LoginScreenProps) => {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <Text style={styles.title}>Login</Text>
+      <View style={styles.containerTitle}>
+        <Text style={styles.title}>Login</Text>
+        <TouchableOpacity style={styles.createButton} onPress={handleCreateUser}>
+        <Text style={styles.buttonText}>Create User</Text>
+      </TouchableOpacity>
+      </View>
+      
 
       <TextInput
         style={styles.input}
@@ -67,10 +90,6 @@ const LoginScreen = ({ setIsLoggedIn, navigation }: LoginScreenProps) => {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={handleCreateUser}>
-        <Text style={styles.buttonText}>Create User</Text>
-      </TouchableOpacity>
     </KeyboardAvoidingView>
   );
 };
@@ -84,11 +103,28 @@ const styles = StyleSheet.create({
     padding: 54,
     backgroundColor: '#f2f2f2',
   },
+  containerTitle: {
+    // flex: 1,
+    alignItems: 'center',
+    flexDirection: 'row',
+    backgroundColor: 'red', 
+    alignSelf: 'center', 
+  },
+  createButton: {
+    backgroundColor: '#4CAF50',
+    height: 30,
+    borderRadius: 8,
+    justifyContent: 'center',
+    //alignItems: 'center',
+    // marginBottom: 16,
+    padding: 16
+  },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 32,
+    //marginBottom: 32,
     textAlign: 'center',
+    padding: 16
   },
   input: {
     height: 50,

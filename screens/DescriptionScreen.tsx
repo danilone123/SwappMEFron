@@ -10,12 +10,18 @@ import {
 
   import {Item} from "./Item"
   import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { PostItem } from "./HomeScreen";
+  //import  OfferParamItem from "./OfferForm";
+
 
   export type RootStackParamList = {
     Login: undefined;
     Dashboard: undefined;
     CreateUser: undefined;
     Details: { item: Item }; // match your screen
+    OfferParamItem: {
+      post: PostItem;
+    }
   };
 
  type Props = NativeStackScreenProps<RootStackParamList, "Details">;

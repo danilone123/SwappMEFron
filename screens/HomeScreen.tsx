@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,45 +6,53 @@ import {
   Image,
   StyleSheet,
   Dimensions,
-  Pressable
+  Pressable,
+  ActivityIndicator
 } from "react-native";
 
 import {Item} from "./Item"
+import { PostType } from "../components/Post"
+import Post from "../components/Post"
+import { getAllItems } from '../hooks/createItemHook';
+import  { _parseItems }   from '../utils/PostParsing';
 
 const { width } = Dimensions.get("window");
 
-const DATA: Item[] = [
-    {
-      id: "1",
-      title: "Mountains",
-      description: "Beautiful mountain landscape, Beautiful mountain landscapeul mountain landscape, Beautiful mountain landscape, Beautiful mountain landscape, Beautiful mountain landscape ,Beautiful mountain , Beautiful mountain landscape ,Beautiful mountain landscapeul mountain landscape, Beautiful mountain landscape, Beautiful mountain landscape, Beautiful mountain landscape ,Beautiful mountain landscapeul mountain landscape, Beautiful mountain landscape, Beautiful mountain landscape, Beautiful mountain landscape ,Beautiful mountain landscape ul mountain landscape, Beautiful mountain landscape, Beautiful mountain landscape, Beautiful mountain landscape ,Beautiful mountain landscape ul mountain landscape, Beautiful mountain landscape, Beautiful mountain landscape, Beautiful mountain landscape ,Beautiful mountain landscape ul mountain landscape, Beautiful mountain landscape, Beautiful mountain landscape, Beautiful mountain landscape ,Beautiful mountain landscape ul mountain landscape, Beautiful mountain landscape, Beautiful mountain landscape, Beautiful mountain landscape ,Beautiful mountain landscape ul mountain landscape, Beautiful mountain landscape, Beautiful mountain landscape, Beautiful mountain landscape ,Beautiful mountain landscape ,Beautiful mountain landscape, Beautiful mountain landscape.",
-      images: ["https://picsum.photos/800/500?1", "https://picsum.photos/800/500?9",  "https://picsum.photos/800/500?10", "https://picsum.photos/800/500?3"],
+const mockPosts: PostType[] = [
+  {
+    id: '1',
+    follow: true,
+    numberFollowers: 12,
+    type: 'offers',
+    offer: 'Free laptop stand',
+    search: 'pc gamer',
+    description: 'A barely used aluminum laptop stand.',
+    placeToChange: 'London',
+    urgency: 2,
+    images: [],
+    user: {
+      userName: 'John Doe',
     },
-    {
-      id: "2",
-      title: "Forest",
-      description: "Deep green forest scenery",
-      images: ["https://picsum.photos/800/500?2", "https://picsum.photos/800/500?1"],
+    numberComments: 4,
+    showSwapp: true,
+  },
+  {
+    id: '2',
+    follow: false,
+    numberFollowers: 5,
+    type: 'donation',
+    offer: 'Winter clothes',
+    description: 'Looking for warm jackets.',
+    placeToChange: 'Manchester',
+    urgency: 3,
+    images: [],
+    user: {
+      userName: 'Sarah',
     },
-    {
-      id: "3",
-      title: "Ocean",
-      description: "Blue ocean view",
-      images: ["https://picsum.photos/800/500?3"],
-    },
-    {
-        id: "4",
-        title: "testttt4",
-        description: "Blue ocean view",
-        images: ["https://picsum.photos/800/500?6"],
-    },
-    {
-        id: "5",
-        title: "testttt555",
-        description: "Blue5555 ocean view",
-        images: ["https://picsum.photos/800/500?5"],
-    }
-  ];
+    numberComments: 1,
+  },
+];
+
 
   const FullScreenSwiper = ({ images }: { images: string[] }) => {
     const [activeIndex, setActiveIndex] = useState(0);
@@ -102,8 +110,46 @@ const DATA: Item[] = [
     );
   };
 
-  
+  export interface PostItem {
+    id: string;
+    images: any;
+    type: string;
+    offer: string;
+    search: string;
+    description: string;
+    urgency: number;
+    follow: boolean;
+    numberFollowers: number;
+    numberComments: number;
+    showSwapp: any;
+    user: any;
+    placeToChange: string
+  }
+
   export default function HomeScreen({ navigation }: any) {
+    const [posts, setPosts] = useState<PostItem[]>([]);
+    const [loading, setLoading] = useState(true);
+    const getItemMutation = getAllItems();
+    
+    const fetchPosts = async () => {
+      try {
+        const response = await getItemMutation.mutateAsync(0);
+  
+        console.log('items from backend:::::', response);
+        let items = _parseItems(response)
+        setPosts(items);
+        
+      } catch (error) {
+        console.log("error when getting items::::::", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    useEffect(() => {
+      fetchPosts();
+    }, []);
+
 //   export default function HomeScreen() {
     const handlePress = (item: Item) => {
         console.log("Clicked::::::", item);
@@ -112,12 +158,34 @@ const DATA: Item[] = [
         navigation.navigate("Details" as never, { item } as never);
       };
 
+      if (loading) {
+        return (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "#000",
+            }}
+          >
+            <ActivityIndicator size="large" color="#fff" />
+          </View>
+        );
+      }
+
     return (
         <View style={{ flex: 1, backgroundColor: "#000" }}>
         <FlatList style={{ flex: 1,  }} contentContainerStyle={{ backgroundColor: "#000" }}
-          data={DATA}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <ImageCell item={item} onPress={handlePress} />}
+          data={posts}
+          keyExtractor={(post) => post.id}
+          renderItem={({ item }) => <Post
+          key={item.id}
+          post={item}
+          isOffertable={true}
+          token="mock-token"
+          refreshToken="mock-refresh-token"
+          navigation={navigation}
+        />}
           showsVerticalScrollIndicator
         />
       </View>
