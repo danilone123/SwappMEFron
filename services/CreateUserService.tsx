@@ -1,4 +1,4 @@
-import api  from '../../servicesSecure/api';
+import api  from '../servicesSecure/api';
 
 export interface CreateUserResponse {
     user: {
