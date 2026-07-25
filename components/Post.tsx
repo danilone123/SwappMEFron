@@ -21,6 +21,7 @@ import ShareItem from './ShareItem';
 
 import { textStyles, globalStyles, colors } from '../styles';
 import { itemTypes } from '../utils/constants';
+import { updateFollowItem } from '../hooks/createItemHook';
 
 // 👉 replace with your real API function
 // import { followItem } from '../services/followService';
@@ -48,6 +49,7 @@ export interface PostType {
   user: User;
   numberComments: number;
   showSwapp?: boolean;
+  status?: string;
 }
 
 interface Props {
@@ -55,14 +57,10 @@ interface Props {
   token: string;
   refreshToken: string;
   isOffertable?: boolean;
+  hideActions?: boolean;
   navigation: any;
   // openMessagesModal: (post: PostType) => void;
 }
-
-type AntDesignIconName = React.ComponentProps<
-  typeof AntDesign
->['name'];
-
 // ------------------
 // COMPONENT
 // ------------------
@@ -72,9 +70,11 @@ const Post: React.FC<Props> = ({
   token,
   refreshToken,
   isOffertable,
+  hideActions = false,
   navigation,
   // openMessagesModal,
 }) => {
+  const updateFollowItemMutation = updateFollowItem();
   const [follows, setFollows] = useState<boolean>(false);
   const [numberFollowers, setNumberFollowers] = useState<number>(0);
 
@@ -107,13 +107,26 @@ const Post: React.FC<Props> = ({
   //   },
   // });
 
-  const handleFollow = () => {
-    //followMutation.mutate();
-  };
+  const handleFollow = async () => {
+    try {
+      const payLoad = {
+        follows: !follows,
+        item: {
+          id: post.id
+        }
+      }
 
-  const heartIcon: AntDesignIconName = follows
-  ? 'heart'
-  : 'heart';
+      const response = await updateFollowItemMutation.mutateAsync(payLoad);
+      setFollows(!follows);
+      setNumberFollowers((prev) =>
+         follows ? prev - 1 : prev + 1
+       );
+      console.log("response value for /item/follow::::::", response)
+    } catch (e) {
+      console.log(e);
+    }
+
+  };
 
   // ------------------
   // RENDER HELPERS
@@ -192,7 +205,7 @@ const Post: React.FC<Props> = ({
           />
         </View>
 
-        {isOffertable !== false && (
+        {!hideActions && isOffertable !== false && (
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               onPress={() =>
@@ -216,24 +229,28 @@ const Post: React.FC<Props> = ({
 
       <View style={styles.footerContainer}>
         <View style={styles.lineNoPaddingVert}>
-          <TouchableOpacity onPress={handleFollow}>
-            <AntDesign
-              name={heartIcon}
-              size={25}
-              color={follows ? 'red' : 'gray'}
-            />
-          </TouchableOpacity>
+          {!hideActions && (
+            <>
+              <TouchableOpacity onPress={handleFollow}>
+                {follows ? (
+                  <AntDesign name="heart" size={25} color="red" />
+                ) : (
+                  <Feather name="heart" size={25} color="white" />
+                )}
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            // onPress={() => openMessagesModal(post)}
-          >
-            <Feather name="message-circle" size={25} color="gray" />
-          </TouchableOpacity>
+              <TouchableOpacity
+                // onPress={() => openMessagesModal(post)}
+              >
+                <Feather name="message-circle" size={25} color="gray" />
+              </TouchableOpacity>
+            </>
+          )}
 
            <ShareItem item={post} />
         </View>
 
-        <Text>{numberFollowers} Siguiendo la publicación</Text>
+        <Text style={textStyles.label}>{numberFollowers} Siguiendo la publicación</Text>
 
         <TouchableOpacity 
         // onPress={() => openMessagesModal(post)}
@@ -242,6 +259,17 @@ const Post: React.FC<Props> = ({
             {post.numberComments} Comentarios
           </Text>
         </TouchableOpacity>
+
+        {isOffertable === false && (
+          <View style={styles.statusDescription}>
+            <Text style={textStyles.label}>
+              Your current status is: {post.status}
+            </Text>
+            <Text style={textStyles.label}>
+              Only open items can be used to make a swapp.
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -272,6 +300,9 @@ const styles = StyleSheet.create({
     footerContainer: {
       flex:2,
       width: "100%"
+    },
+    statusDescription: {
+      marginTop: 8,
     },
     iconHeader : {
       fontSize: 20,

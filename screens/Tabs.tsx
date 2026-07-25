@@ -4,12 +4,15 @@ import React from "react";
 import HomeStack from "./HomeStack";
 import MyItemsStack from "./MyItemsStack";
 import ItemStack from "./ItemStack";
+import PortalStack from "./PortalStack";
+import ProfileStack from "./ProfileStack";
+import { LoginScreenProps } from "../App";
 
 type TabParamList = {
     Home: undefined;
     MyPost: undefined,
     Search: undefined;
-    Notifications: undefined;
+    Portal: undefined;
     Profile: undefined;
   };
 
@@ -22,7 +25,7 @@ type TabParamList = {
     </View>
   );
 
-  export default function Tabs() {
+  export default function Tabs({ setIsLoggedIn }: LoginScreenProps) {
     return (
       <Tab.Navigator>
          <Tab.Screen
@@ -40,15 +43,24 @@ type TabParamList = {
         component={ItemStack}
         options={{ headerShown: false }} // important
       />
-      {/* <Tab.Screen name="Search">
-          {() => <Screen label="Search" />}
-        </Tab.Screen> */}
-        <Tab.Screen name="Notifications">
-          {() => <Screen label="Notifications" />}
-        </Tab.Screen>
-        <Tab.Screen name="Profile">
-          {() => <Screen label="Profile" />}
-        </Tab.Screen>
+      <Tab.Screen
+        name="Portal"
+        component={PortalStack}
+        options={{ headerShown: false }} // important
+      />
+    
+       {/* <Tab.Screen 
+        name="Profile" 
+        component={ProfileStack}
+        options={{ headerShown: false }}         
+        /> */}
+        <Tab.Screen 
+        name="Profile" 
+        options={{ headerShown: false }}         
+      >
+        {/* Render via function to pass the prop into the Stack */}
+        {(props) => <ProfileStack {...props} setIsLoggedIn={setIsLoggedIn} />}
+      </Tab.Screen>
       </Tab.Navigator>
     );
   }

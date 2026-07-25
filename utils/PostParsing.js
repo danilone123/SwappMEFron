@@ -14,7 +14,8 @@ export function _parseItem(data = {}) {
     numberComments = 0,
     showSwapp,
     user,
-    isNew
+    isNew,
+    status
   } = data;
 
   console.log("images value::::", images)
@@ -43,7 +44,8 @@ export function _parseItem(data = {}) {
     numberComments,
     showSwapp,
     user,
-     placeToChange: "Manchester"//_parsePlaceToChange(data)
+    placeToChange: "Manchester",//_parsePlaceToChange(data)
+    status
   };
 }
 

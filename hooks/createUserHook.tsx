@@ -1,6 +1,6 @@
 
   import { useMutation } from '@tanstack/react-query';
-  import { createUser, CreateUserResponse, refreshToken, CreateTokenResponse } from '../services/CreateUserService'
+  import { createUser, CreateUserResponse, refreshToken, CreateTokenResponse, UpdatePersonalInformation } from '../services/CreateUserService'
 
   interface CreateUserInput {
     email: string;
@@ -21,10 +21,15 @@
   }
 
   
-
   export const refreshTokenNew = () => {
     return useMutation<CreateTokenResponse, Error, CreateUserToken>({
       mutationFn: (user: CreateUserToken) => refreshToken(user.refreshToken),
+    });
+  };
+
+  export const updatePersonalInfo = () => {
+    return useMutation<string, Error, any>({
+      mutationFn: (user: any) => UpdatePersonalInformation(user),
     });
   };
 

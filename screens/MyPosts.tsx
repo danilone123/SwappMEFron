@@ -14,11 +14,12 @@ import { _parseItems } from '../utils/PostParsing';
 import { PostItem } from './HomeScreen';
 import { getAllMyItems } from '../hooks/createItemHook';
 
-type RootStackParamList = {
+export type RootStackParamList = {
   MyPosts: undefined;
   SinglePost: {
     post: any;
     isOffertable: boolean;
+    hideActions?: boolean;
   };
 };
 
@@ -87,7 +88,7 @@ const MyPostsScreen: React.FC<Props> = ({ navigation }) => {
         ) : myPosts.length === 0 ? (
           <View style={styles.noItemsMessageContainer}>
             <Text style={textStyles.label}>
-              No tienes ofertas registrados
+              No tienes Items registrados
             </Text>
 
             <TouchableOpacity
@@ -102,9 +103,11 @@ const MyPostsScreen: React.FC<Props> = ({ navigation }) => {
           <PostGrid
             data={myPosts}
             callback={item =>
+              
                 navigation.navigate('SinglePost', {
                   post: item,
                   isOffertable: false,
+                  hideActions: true
                 })
               }
             isRefreshing={isRefreshing}

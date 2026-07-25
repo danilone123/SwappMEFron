@@ -31,6 +31,7 @@ import React, {
     SinglePost: {
       post: PostItem;
       isOffertable: boolean;
+      hideActions?: boolean;
     };
   };
   
@@ -68,28 +69,28 @@ import React, {
     //
     // Header Actions
     //
-    useLayoutEffect(() => {
-      navigation.setOptions({
-        headerRight: () => (
-          <TouchableOpacity
-            style={styles.offerButton}
-            onPress={() => {
-              // TODO: implement submit offer
-              console.log('Offer clicked');
-            }}
-          >
-            <Text
-              style={[
-                textStyles.link,
-                { fontSize: 16 },
-              ]}
-            >
-              Ofertar
-            </Text>
-          </TouchableOpacity>
-        ),
-      });
-    }, [navigation]);
+    // useLayoutEffect(() => {
+    //   navigation.setOptions({
+    //     headerRight: () => (
+    //       <TouchableOpacity
+    //         style={styles.offerButton}
+    //         onPress={() => {
+    //           // TODO: implement submit offer
+    //           console.log('Offer clicked');
+    //         }}
+    //       >
+    //         <Text
+    //           style={[
+    //             textStyles.link,
+    //             { fontSize: 16 },
+    //           ]}
+    //         >
+    //           Ofertar
+    //         </Text>
+    //       </TouchableOpacity>
+    //     ),
+    //   });
+    // }, [navigation]);
   
     const handleCloseMessages = (
       numberComments: number,
@@ -123,6 +124,7 @@ import React, {
               post={itemSelected}
               navigation={navigation}
               isOffertable={isOffertable}
+              hideActions={route.params.hideActions === true}
               token="mock-token"
               refreshToken="mock-refresh-token"
             //   openMessagesModal={() =>

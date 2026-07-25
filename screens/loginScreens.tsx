@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 
 import { loginUser } from '../hooks/loginHook';
-import  { saveTokens } from '../servicesSecure/authStorage'
+import  { saveTokens, saveUser } from '../servicesSecure/authStorage'
 
 export type LoginScreenProps = {
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
@@ -45,7 +45,8 @@ const LoginScreen = ({ setIsLoggedIn, navigation }: LoginScreenProps) => {
           console.log('User created:', response.user);
           console.log('refresh Tokens:', response.refreshToken);
           console.log('Token access:', response.jwtToken);
-          await saveTokens(response.jwtToken, response.refreshToken) 
+          await saveTokens(response.jwtToken, response.refreshToken);
+          await saveUser(response.user); 
           setIsLoggedIn(true)
           
         }, 

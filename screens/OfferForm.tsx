@@ -24,7 +24,7 @@ import React, {
   
   import ImageGallery, { GalleryItem } from '../components/ImageGallery';
   import { getAllMyItems, setOfferAItem } from '../hooks/createItemHook';
-  import { ItemResponse } from '../.expo/services/CreateUserService';
+  import { ItemResponse } from '../services/CreateUserService';
   import { RootStackParamList } from './DescriptionScreen';
   import {
     NativeStackScreenProps,
@@ -107,8 +107,6 @@ import React, {
       }
   
      setShowComment(false);
-     console.log("the comment is::::", comment)
-  
       const payload = {
         itemOffered: route.params.post.id,
         myItems: itemsSelected.map(item => item.id),
@@ -120,8 +118,10 @@ import React, {
         setIsLoadingRequest(true);
         const response = await setOfferAItemMutation.mutateAsync(payload)
         console.log("response value for offerForm when offering a imte::::", response)
-        navigation.popToTop();
-        //navigation.getParent()?.navigate('Dashboard');
+        console.log("the id of the itemoffered is:::::", payload.itemOffered)
+        navigation.popTo('Dashboard', {
+          id: payload.itemOffered,
+        });
       } catch (error) {
         console.error('OfferForm error:', error);
       } finally {
@@ -134,9 +134,12 @@ import React, {
         setIsLoadingRequest(true);
         
         const response = await getItemMutation.mutateAsync();
-        setOfferings(response);
+        //user can only make an offer using his open status items.
+        const openItems = response.filter(i => i.status === "open")
+
+        setOfferings(openItems);
   
-        const mappedItems: GalleryItem[] = response.map(
+        const mappedItems: GalleryItem[] = openItems.map(
           (item: ItemResponse) => ({
             id: item.id,
             uri:
@@ -145,6 +148,8 @@ import React, {
               ],
           })
         );
+
+
   
         setData(mappedItems);
        // dispatch(saveMyItems(mappedItems));
@@ -187,7 +192,7 @@ import React, {
           <View style={styles.galleryContentHeader}>
           {/* style={styles.textContainer} */}
             <Text >
-              Elije una o mas publicaciones para
+              Elige una o mas publicaciones para
               ofertar este producto:
             </Text>
           </View>

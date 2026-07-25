@@ -16,7 +16,7 @@ import { PostItem } from "./HomeScreen";
 
   export type RootStackParamList = {
     Login: undefined;
-    Dashboard: undefined;
+    Dashboard: { id?: string } | undefined;
     CreateUser: undefined;
     Details: { item: Item }; // match your screen
     OfferParamItem: {

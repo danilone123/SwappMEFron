@@ -4,7 +4,7 @@ export interface CreateUserResponse {
     user: {
       id: number;
       userName: string;
-      nickname: string;
+      nickName: string;
       phone: string;
       userHasPreference: boolean;   
     };
@@ -101,6 +101,7 @@ export const createUser = async (email: string, password: string, fullname: stri
       nickName: string,
       userName: string,
     }
+    status?: string,
   }
 
   export const getItems = async (
@@ -166,6 +167,102 @@ export const createUser = async (email: string, password: string, fullname: stri
     ): Promise<String> => {
       const response = await api.post(
         `/item/offer`,
+        data
+      );
+    
+      return response.data;
+    };
+
+    export type ItemsOffered = {
+      id: string,
+      status: string,
+      offerComment: string,
+      firstItem: {
+        item: ItemResponse,
+        user: {
+          id: number;
+           userName: string;
+          nickname: string;
+           phone: string;
+          userHasPreference: boolean;  
+       }
+      }
+      options: {
+        items: ItemResponse[]
+        user: {
+           id: number;
+            userName: string;
+           nickname: string;
+            phone: string;
+           userHasPreference: boolean;  
+        }
+      }
+    } 
+
+   
+  export const OfferForME = async (
+    ): Promise<ItemsOffered[]> => {
+      const response = await api.get(
+        `/items/to/me`,
+      );
+    
+      return response.data;
+    };
+
+  export const OffersMadeForME = async (
+    ): Promise<ItemsOffered[]> => {
+      const response = await api.get(
+        `/items/me`,
+      );
+    
+      return response.data;
+    };
+
+    export const UpdatePersonalInformation = async(data: any) : Promise<string> => {
+      const response = await api.post(
+        `/user/personal-information`,
+        data
+      );
+    
+      return response.data;
+    };
+
+    export const UpdateOffer = async(data: any) : Promise<string> => {
+      const response = await api.post(
+        `/update/offer`,
+        data
+      );
+    
+      return response.data;
+    };
+
+    export const UpdateRatingOffer = async(data: any) : Promise<string> => {
+      const response = await api.post(
+        `/offer/score`,
+        data
+      );
+    
+      return response.data;
+    };
+
+    export const FollowingItems = async() : Promise<ItemResponse[]> => {
+      const response = await api.get(
+        `/following`,
+      );
+    
+      return response.data;
+    };
+
+    // export type Follower = {
+    //   folows: boolean
+    //   item: {
+    //     id: string
+    //   }
+    // }
+
+    export const UpdateFollowItem = async(data: any) : Promise<string> => {
+      const response = await api.post(
+        `/item/follow`,
         data
       );
     

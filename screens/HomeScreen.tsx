@@ -7,7 +7,8 @@ import {
   StyleSheet,
   Dimensions,
   Pressable,
-  ActivityIndicator
+  ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 
 import {Item} from "./Item"
@@ -15,6 +16,8 @@ import { PostType } from "../components/Post"
 import Post from "../components/Post"
 import { getAllItems } from '../hooks/createItemHook';
 import  { _parseItems }   from '../utils/PostParsing';
+import { useRoute, useFocusEffect, RouteProp } from '@react-navigation/native';
+import { RootStackParamList } from './DescriptionScreen';
 
 const { width } = Dimensions.get("window");
 
@@ -124,31 +127,84 @@ const mockPosts: PostType[] = [
     showSwapp: any;
     user: any;
     placeToChange: string
+    status?: string
   }
 
+  type HomeRouteProp = RouteProp<RootStackParamList, 'Dashboard'>;
+
   export default function HomeScreen({ navigation }: any) {
+    const route = useRoute<HomeRouteProp>();
     const [posts, setPosts] = useState<PostItem[]>([]);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+    const pageRef = useRef(0);
+    const isFetchingRef = useRef(false);
     const getItemMutation = getAllItems();
     
-    const fetchPosts = async () => {
+    const fetchPosts = async (pageToFetch: number, resetList = false) => {
+      if (isFetchingRef.current) {
+        return;
+      }
+
+      isFetchingRef.current = true;
+
+      if (resetList) {
+        setRefreshing(!loading);
+        setPosts([]);
+        pageRef.current = 0;
+      }
+
       try {
-        const response = await getItemMutation.mutateAsync(0);
+        const response = await getItemMutation.mutateAsync(pageToFetch);
+
+        if (response.length > 0) {
+
+          console.log('items from backend:::::', response);
+          const items = _parseItems(response);
   
-        console.log('items from backend:::::', response);
-        let items = _parseItems(response)
-        setPosts(items);
+          setPosts(currentPosts =>
+            resetList ? items : [...currentPosts, ...items],
+          );
+          
+          pageRef.current = pageToFetch;
+        } else {
+          console.log('No more items');
+        }
+  
         
       } catch (error) {
         console.log("error when getting items::::::", error);
       } finally {
         setLoading(false);
+        setRefreshing(false);
+        isFetchingRef.current = false;
       }
     }
 
+    const loadMorePosts = () => {
+      fetchPosts(pageRef.current + 1);
+    };
+
+    const refreshPosts = () => {
+      fetchPosts(0, true);
+    };
+
+    useFocusEffect(
+      React.useCallback(() => {
+        
+        const id = route.params?.id;
+        console.log("i should remove item when pop:::: id::::", route.params)
+        if (id) {
+          setPosts((currentPosts) =>
+          currentPosts.filter((post) => post.id !== id)
+          );
+        } 
+      }, [route.params])
+    );
+
     useEffect(() => {
-      fetchPosts();
-    }, []);
+      fetchPosts(0, true);
+    }, [navigation]);
 
 //   export default function HomeScreen() {
     const handlePress = (item: Item) => {
@@ -187,6 +243,15 @@ const mockPosts: PostType[] = [
           navigation={navigation}
         />}
           showsVerticalScrollIndicator
+          onEndReached={loadMorePosts}
+          onEndReachedThreshold={0.5}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={refreshPosts}
+              tintColor="#fff"
+            />
+          }
         />
       </View>
     );

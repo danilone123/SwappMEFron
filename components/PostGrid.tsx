@@ -5,6 +5,7 @@ import {
   RefreshControl,
   StyleSheet,
   TouchableOpacity,
+  View,
   ViewStyle,
 } from 'react-native';
 
@@ -58,6 +59,7 @@ const TouchableImage: FC<TouchableImageProps> = ({
         //source={{ uri: item.images.uri }}
         resizeMode="cover"
       />
+      {item.status !== 'open' && <View style={styles.unavailableOverlay} />}
     </TouchableOpacity>
   );
 };
@@ -112,6 +114,11 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: colors.GRAY,
+  },
+
+  unavailableOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.49)',
   },
 
   selected: {

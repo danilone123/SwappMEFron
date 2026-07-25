@@ -9,6 +9,7 @@ export type MyPostParamList = {
     SinglePost: {
         post: PostItem;
         isOffertable: boolean;
+        hideActions?: boolean;
       };
 };
 

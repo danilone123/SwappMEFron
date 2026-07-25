@@ -13,7 +13,7 @@ import {
 
 import { useLogin, refreshTokenNew } from '../hooks/createUserHook';
 import { LoginScreenProps } from '../screens/loginScreens'
-import  { getAccessToken, getRefreshToken, saveTokens } from '../servicesSecure/authStorage'
+import  { getAccessToken, getRefreshToken, saveTokens, saveUser } from '../servicesSecure/authStorage'
 
 const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
     const [email, setEmail] = useState<string>('');
@@ -36,7 +36,8 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
             onSuccess: async (response) => {
               console.log('User created:', response.user);
               console.log('refresh Tokens:', response.refreshToken);
-              await saveTokens(response.jwtToken, response.refreshToken) 
+              await saveTokens(response.jwtToken, response.refreshToken);
+              await saveUser(response.user);
               setIsLoggedIn(true)
               
             }, 

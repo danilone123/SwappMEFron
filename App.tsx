@@ -12,12 +12,13 @@ import { RootStackParamList } from "./screens/DescriptionScreen";
 import CreateUserScreen from './screens/CreateUserScreen';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { getAccessToken } from "./servicesSecure/authStorage"
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 
 const client = new QueryClient();
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-type LoginScreenProps = {
+export type LoginScreenProps = {
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -40,14 +41,11 @@ function AuthStack({ setIsLoggedIn }: LoginScreenProps) {
   );
 }
 
-function AppStack() {
-return (
-  <Tabs />
-  // <Stack.Navigator>
-  //   <Stack.Screen name="Dashboard" component={HomeScreen} />
-  //   <Stack.Screen name="Details" component={DescriptionScreen} />
-  // </Stack.Navigator>
-);
+function AppStack({ setIsLoggedIn }: LoginScreenProps) {
+  return (
+    // Pass it into Tabs
+    <Tabs setIsLoggedIn={setIsLoggedIn} />
+  );
 }
 
 export default function App() {
@@ -81,12 +79,14 @@ export default function App() {
   }
 
 return (
+  <ActionSheetProvider>
   <QueryClientProvider client={client}>
     <View style={{ flex: 1 }}>
       <NavigationContainer>
-        {isLoggedIn ? <AppStack /> : <AuthStack setIsLoggedIn={setIsLoggedIn} />}
+        {isLoggedIn ? <AppStack setIsLoggedIn={setIsLoggedIn} /> : <AuthStack setIsLoggedIn={setIsLoggedIn} />}
       </NavigationContainer>
     </View>
   </QueryClientProvider>
+  </ActionSheetProvider>
 );
 }
