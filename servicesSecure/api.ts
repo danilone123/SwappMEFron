@@ -26,7 +26,7 @@ api.interceptors.response.use(
     console.log('original request :::::::', originalRequest.url);
     if (
       (error.response?.status === 401 || error.response?.status === 403) &&
-      originalRequest.url !== '/auth/refresh'
+      (originalRequest.url !== '/auth/refresh' && originalRequest.url !== '/forgotPassword')
     ) {
       try {
         

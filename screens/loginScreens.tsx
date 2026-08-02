@@ -29,6 +29,12 @@ const LoginScreen = ({ setIsLoggedIn, navigation }: LoginScreenProps) => {
     navigation.navigate("CreateUser")
   };
 
+  const handleForgotPassword = () => {
+    console.log("forgot password selected");
+    console.log(navigation);
+    navigation.navigate("ForgotPassword")
+  };
+
   const handleLogin = () => {
     console.log("Login button pressed");
     if (!email || !password) {  
@@ -65,8 +71,13 @@ const LoginScreen = ({ setIsLoggedIn, navigation }: LoginScreenProps) => {
     >
       <View style={styles.containerTitle}>
         <Text style={styles.title}>Login</Text>
-        <TouchableOpacity style={styles.createButton} onPress={handleCreateUser}>
-        <Text style={styles.buttonText}>Create User</Text>
+        <TouchableOpacity onPress={handleCreateUser}>
+        {/* style={styles.buttonText} */}
+        <Text >Create User</Text>
+      </TouchableOpacity>
+      <TouchableOpacity  onPress={handleForgotPassword}>
+        {/* style={styles.buttonText} */}
+        <Text >      Olvidaste el password?</Text>
       </TouchableOpacity>
       </View>
       

@@ -159,7 +159,7 @@ const mockPosts: PostType[] = [
 
         if (response.length > 0) {
 
-          console.log('items from backend:::::', response);
+          console.log('items from backend:::::::', response);
           const items = _parseItems(response);
   
           setPosts(currentPosts =>

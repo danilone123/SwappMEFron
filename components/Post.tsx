@@ -240,7 +240,9 @@ const Post: React.FC<Props> = ({
               </TouchableOpacity>
 
               <TouchableOpacity
-                // onPress={() => openMessagesModal(post)}
+                onPress={() =>
+                  navigation.navigate('DescriptionQuestion', { post })
+                }
               >
                 <Feather name="message-circle" size={25} color="gray" />
               </TouchableOpacity>

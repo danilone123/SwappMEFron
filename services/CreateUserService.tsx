@@ -268,3 +268,13 @@ export const createUser = async (email: string, password: string, fullname: stri
     
       return response.data;
     };
+    //'/forgotPassword'
+
+    export const UpdatePassword =  async(data: any) : Promise<string> => {
+      const response = await api.post(
+        `/forgotPassword`,
+        data
+      );
+    
+      return response.data;
+    };

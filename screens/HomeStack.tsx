@@ -4,6 +4,7 @@ import HomeScreen from "./HomeScreen";
 import DescriptionScreen from "./DescriptionScreen";
 import { RootStackParamList } from "./DescriptionScreen";
 import  OfferForm from "./OfferForm";
+import DescriptionQuestionScreen from './DescriptionQuestionScreen';
 
 
 
@@ -16,6 +17,11 @@ export default function HomeStack() {
       <Stack.Screen name="Dashboard" component={HomeScreen} />
       <Stack.Screen name="Details" component={DescriptionScreen} />
       <Stack.Screen name="OfferParamItem" component={OfferForm} />
+      <Stack.Screen
+        name="DescriptionQuestion"
+        component={DescriptionQuestionScreen}
+        options={{ title: 'Preguntas' }}
+      />
     </Stack.Navigator>
   );
 }

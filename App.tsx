@@ -13,6 +13,7 @@ import CreateUserScreen from './screens/CreateUserScreen';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { getAccessToken } from "./servicesSecure/authStorage"
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+import ForgetPasswordForm from "./screens/ForgotPasswordScreen"
 
 const client = new QueryClient();
 
@@ -34,6 +35,12 @@ function AuthStack({ setIsLoggedIn }: LoginScreenProps) {
       <Stack.Screen name="CreateUser">
         {(props) => (
           <CreateUserScreen {...props} setIsLoggedIn={setIsLoggedIn} />
+        )}
+      </Stack.Screen>
+
+      <Stack.Screen name="ForgotPassword">
+        {(props) => (
+           <ForgetPasswordForm  />
         )}
       </Stack.Screen>
    

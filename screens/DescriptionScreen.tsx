@@ -21,7 +21,11 @@ import { PostItem } from "./HomeScreen";
     Details: { item: Item }; // match your screen
     OfferParamItem: {
       post: PostItem;
-    }
+    };
+    DescriptionQuestion: {
+      post: PostItem;
+    };
+    ForgotPassword: undefined
   };
 
  type Props = NativeStackScreenProps<RootStackParamList, "Details">;
