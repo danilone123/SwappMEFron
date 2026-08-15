@@ -174,14 +174,17 @@ import React, {
             console.log('buttonIndex', buttonIndex);
             switch (buttonIndex) {
               case 0:
-                Linking.openURL(
-                  `https://wa.me/56${item.options.user.phone}`
-                );
+                
+                // Linking.openURL(
+                //   `https://wa.me/56${item.options.user.phone}`
+                // );
+                openWhatsApp(item.options.user.phone, `Hola, vi tu interés en la publicación. ${item.firstItem.item.description}`)
                 break;
               case 1:
-                Linking.openURL(
-                  `tel:+56${item.options.user.phone}`
-                );
+                // Linking.openURL(
+                //   `tel:+56${item.options.user.phone}`
+                // );
+                makePhoneCall(item.options.user.phone)
                 break;
             }
           }
@@ -190,12 +193,31 @@ import React, {
       [showActionSheetWithOptions]
     );
 
+    const openWhatsApp = async (
+      phoneNumber: string,
+      message: string,
+    ) => {
+      const cleanPhone = phoneNumber.replace(/\D/g, '');
+    
+      const url =
+        `https://wa.me/${cleanPhone}` +
+        `?text=${encodeURIComponent(message)}`;
+    
+      await Linking.openURL(url);
+    };
+
+    const makePhoneCall = async (phoneNumber: string) => {
+      const url = `tel:${phoneNumber}`;
+    
+      await Linking.openURL(url);
+    };
+
     const openAnnouncementModal = (text: string, onSuccess: () => void) => {
       //setVisible(true);
       console.log("openAnnouncementModal::: here class offeringInvView:::::text===", text);
       setMessage(text);
-  setOnSuccess(onSuccess);
-  setVisible(true);
+      setOnSuccess(onSuccess);
+      setVisible(true);
     //   <AnnouncementModal
     //   visible={visible}
     //   message={text}

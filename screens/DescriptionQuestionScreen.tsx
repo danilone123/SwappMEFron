@@ -1,6 +1,7 @@
-import React, { useLayoutEffect, useMemo, useState } from 'react';
+import React, { useLayoutEffect, useMemo, useState, useEffect } from 'react';
 import {
   Image,
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -17,39 +18,34 @@ import ProductRow from '../components/ProductRow';
 import { colors, textStyles } from '../styles';
 import { itemTypes } from '../utils/constants';
 import { RootStackParamList } from './DescriptionScreen';
+import { createQuestionForItem, getQuestionsForItem } from '../hooks/createItemHook';
+import { Question } from '../services/CreateUserService'
 
-type Question = {
-  userName: string;
-  userID: number;
-  userQuestion: string;
-  userQuestionDate: string;
-  sellerName: string | null;
-  reply: string | null;
-  replyDate: string | null;
-};
+
+
 
 // Temporary response for GET /item/questions. Replace this with the API call
 // when the endpoint is available.
-const mockedQuestions: Question[] = [
-  {
-    userName: 'daniel',
-    userID: 12,
-    userQuestion: '¿Probando el test?',
-    userQuestionDate: '2025-06-03',
-    sellerName: 'seller name',
-    reply: 'Así es, tienes razón.',
-    replyDate: '2025-06-04',
-  },
-  {
-    userName: 'maría',
-    userID: 18,
-    userQuestion: '¿Todavía está disponible?',
-    userQuestionDate: '2025-06-05',
-    sellerName: null,
-    reply: null,
-    replyDate: null,
-  },
-];
+// const mockedQuestions: Question[] = [
+//   {
+//     userName: 'daniel',
+//     userID: 12,
+//     userQuestion: '¿Probando el test?',
+//     userQuestionDate: '2025-06-03',
+//     sellerName: 'seller name',
+//     reply: 'Así es, tienes razón.',
+//     replyDate: '2025-06-04',
+//   },
+//   {
+//     userName: 'maría',
+//     userID: 18,
+//     userQuestion: '¿Todavía está disponible?',
+//     userQuestionDate: '2025-06-05',
+//     sellerName: null,
+//     reply: null,
+//     replyDate: null,
+//   },
+// ];
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
@@ -76,9 +72,26 @@ const getImageSource = (images: any) => {
 
 export default function DescriptionQuestionScreen({ route, navigation }: Props) {
   const post = route.params.post;
-  const [questions, setQuestions] = useState<Question[]>(mockedQuestions);
+  const [questions, setQuestions] = useState<Question[]>([]);//useState<PostItem[]>([]);
   const [questionText, setQuestionText] = useState('');
+  const createQuestionMutation = createQuestionForItem();
+  const getQuestionsMutation = getQuestionsForItem()
   const imageSource = useMemo(() => getImageSource(post.images), [post.images]);
+
+  const fetchQuestions = async () => {
+    try {
+      const listOfQuestions = await getQuestionsMutation.mutateAsync(post.id)
+      console.log("listOfquestions first date", listOfQuestions[0].userQuestionDate);
+      setQuestions(listOfQuestions)
+
+    } catch (error) {
+      console.error('Error creating item question:', error);
+    }
+  }
+
+  useEffect(() => {
+    fetchQuestions();
+  }, []);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -93,24 +106,34 @@ export default function DescriptionQuestionScreen({ route, navigation }: Props) 
     });
   }, [navigation, post]);
 
-  const sendQuestion = () => {
+  const sendQuestion = async () => {
     const trimmedQuestion = questionText.trim();
-    if (!trimmedQuestion) return;
+    if (!trimmedQuestion || createQuestionMutation.isPending) return;
 
-    // Temporary optimistic update. This will become POST /item/questions.
-    setQuestions(currentQuestions => [
-      ...currentQuestions,
-      {
-        userName: 'Tú',
-        userID: 0,
-        userQuestion: trimmedQuestion,
-        userQuestionDate: new Date().toISOString().slice(0, 10),
-        sellerName: null,
-        reply: null,
-        replyDate: null,
-      },
-    ]);
-    setQuestionText('');
+    try {
+      const response = await createQuestionMutation.mutateAsync({
+        itemId: post.id,
+        questionText: {questionText: trimmedQuestion},
+      });
+      console.log('Question created successfully:', response);
+
+      setQuestions(currentQuestions => [
+        ...currentQuestions,
+        {
+          userName: 'Tú',
+          userID: 0,
+          userQuestion: trimmedQuestion,
+          userQuestionDate: new Date().toISOString().slice(0, 10),
+          sellerName: null,
+          reply: null,
+          replyDate: null,
+          itemDescription: post.description,
+        },
+      ]);
+      setQuestionText('');
+    } catch (error) {
+      console.error('Error creating item question:', error);
+    }
   };
 
   return (
@@ -159,13 +182,29 @@ export default function DescriptionQuestionScreen({ route, navigation }: Props) 
           <View style={styles.questionCard} key={`${question.userID}-${question.userQuestionDate}-${index}`}>
             <Text style={styles.questionAuthor}>{question.userName}</Text>
             <Text style={styles.questionText}>{question.userQuestion}</Text>
-            <Text style={styles.date}>{question.userQuestionDate}</Text>
+            <Text style={styles.date}>
+              {new Date(question.userQuestionDate)
+                       .toLocaleDateString('es-BO', {
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric',
+                        })
+                        .replace(/ de /g, ' ')}</Text>
+            
 
             {question.reply && (
               <View style={styles.replyContainer}>
                 <Text style={styles.replyAuthor}>{question.sellerName ?? 'Vendedor'}</Text>
                 <Text style={styles.replyText}>{question.reply}</Text>
-                {question.replyDate && <Text style={styles.date}>{question.replyDate}</Text>}
+                {question.replyDate && <Text style={styles.date}>
+                {new Date(question.replyDate)
+                       .toLocaleDateString('es-BO', {
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric',
+                        })
+                        .replace(/ de /g, ' ')}
+                  </Text>}
               </View>
             )}
           </View>
@@ -181,9 +220,19 @@ export default function DescriptionQuestionScreen({ route, navigation }: Props) 
           style={styles.input}
           multiline
         />
-        <TouchableOpacity style={styles.sendButton} onPress={sendQuestion}>
-          <Feather name="send" size={16} color="#FFFFFF" />
-          <Text style={styles.sendButtonText}>Enviar</Text>
+        <TouchableOpacity
+          style={[styles.sendButton, createQuestionMutation.isPending && styles.sendButtonDisabled]}
+          onPress={sendQuestion}
+          disabled={createQuestionMutation.isPending}
+        >
+          {createQuestionMutation.isPending ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <>
+              <Feather name="send" size={16} color="#FFFFFF" />
+              <Text style={styles.sendButtonText}>Enviar</Text>
+            </>
+          )}
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -209,6 +258,7 @@ const styles = StyleSheet.create({
   input: { flex: 1, minHeight: 42, maxHeight: 100, borderWidth: 1, borderColor: '#D5D5D5', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 9, color: '#262626' },
   sendButton: { flexDirection: 'row', alignItems: 'center', alignSelf: 'stretch', justifyContent: 'center', backgroundColor: colors.BLUE, borderRadius: 8, marginLeft: 8, paddingHorizontal: 12, gap: 5 },
   sendButtonText: { color: '#FFFFFF', fontWeight: '700' },
+  sendButtonDisabled: { opacity: 0.7 },
   offerButton: { paddingHorizontal: 8, paddingVertical: 6 },
   offerButtonText: { ...textStyles.link, fontSize: 16 },
 });

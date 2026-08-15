@@ -173,6 +173,64 @@ export const createUser = async (email: string, password: string, fullname: stri
       return response.data;
     };
 
+  export const createItemQuestion = async (
+    itemId: string,
+    questionText: any,
+  ): Promise<unknown> => {
+    const response = await api.post(
+      `/item/create/question/${itemId}`,
+       questionText,
+    );
+
+    return response.data;
+  };
+
+  // export type Question = {
+  //   user: {
+  //     fullname: string,
+  //     nickname: string,
+  //     id: Int16Array,
+  //   },
+  //   questionText: string,
+  //   replyText: string,
+  //   createdAt: Date,
+  //   repliedAt: Date,
+  // }
+  export type Question = {
+  id?: string | number;
+  userName: string;
+  userID: number;
+  userQuestion: string;
+  userQuestionDate: string;
+  sellerName: string | null;
+  reply: string | null;
+  replyDate: string | null;
+  itemDescription: string | null;
+};
+
+  export const getPendingItemQuestions = async (): Promise<Question[]> => {
+    const response = await api.get('/item/pending/questions');
+    return response.data;
+  };
+
+  export const replyToQuestion = async (
+    questionId: string | number,
+    replyText: string,
+  ): Promise<Question> => {
+    const response = await api.patch(`/questions/${questionId}/reply`, { replyText });
+    return response.data;
+  };
+
+  export const getItemQuestions = async (
+    itemId: string,
+  ): Promise<[Question]> => {
+    const response = await api.get(
+      `/item/questions/${itemId}`,
+    );
+
+    return response.data;
+  };
+
     export type ItemsOffered = {
       id: string,
       status: string,

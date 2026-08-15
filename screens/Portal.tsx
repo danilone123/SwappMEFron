@@ -17,9 +17,10 @@ import { colors } from '../styles';
 import OfferingInView from '../components/OfferingInView';
 import OfferingOutView from '../components/OfferingOutView';
 import FollowingView from '../components/FollowingView';
+import ReplyQuestionsScreen from './ReplyQuestionsScreen';
 
 type TabRoute = {
-  key: 'offers_in' | 'offers_out' | 'following';
+  key: 'offers_in' | 'offers_out' | 'following' | 'questions';
   title: string;
 };
 
@@ -50,6 +51,10 @@ const Portal: React.FC<Props> = ({
           key: 'following',
           title: 'Seguidos',
         },
+        {
+          key: 'questions',
+          title: 'Preguntas',
+        },
       ],
       []
     );
@@ -73,6 +78,9 @@ const Portal: React.FC<Props> = ({
               navigation={navigation}
             />
           );
+
+        case 'questions':
+          return <ReplyQuestionsScreen />;
   
         default:
           return null;
@@ -83,6 +91,7 @@ const Portal: React.FC<Props> = ({
         offers_in: require('../assets/icons/ofertas-de-otros-light.png'),
         offers_out: require('../assets/icons/mis-ofertas-light.png'),
         following: require('../assets/icons/seguidos-light.png'),
+        questions: require('../assets/icons/ofertas-de-otros-light.png'),
       } as const;
   
     const renderTabBar = (props: any) => (

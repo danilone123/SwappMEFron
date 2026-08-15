@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { UpdateFollowItem, FollowingItems, ItemsOffered, OfferForME, OffersMadeForME, createItem, CreateItemPayload, CreateItemResponse, getItems, ItemResponse, updateImage, getMyItems, OfferAItem, OfferAItemStruct,  } from '../services/CreateUserService'
+import { getItemQuestions, Question, UpdateFollowItem, FollowingItems, ItemsOffered, OfferForME, OffersMadeForME, createItem, CreateItemPayload, CreateItemResponse, getItems, ItemResponse, updateImage, getMyItems, OfferAItem, OfferAItemStruct, createItemQuestion } from '../services/CreateUserService'
 
 export const createNewItem = () => {
     return useMutation<CreateItemResponse, Error, CreateItemPayload>({
@@ -62,4 +62,18 @@ export const updateFollowItem = () => {
   return useMutation<String, Error, any>({
     mutationFn: (data: any) => UpdateFollowItem(data),
   }); 
+}
+
+export const createQuestionForItem = () => {
+  return useMutation<unknown, Error, { itemId: string; questionText: any }>({
+    mutationFn: ({ itemId, questionText }) =>
+      createItemQuestion(itemId, questionText),
+  });
+};
+
+export const getQuestionsForItem = () => {
+  return useMutation<[Question], Error, string>({
+    mutationFn: ( itemID: string ) =>
+    getItemQuestions(itemID),
+  });
 }

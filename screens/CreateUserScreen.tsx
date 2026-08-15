@@ -1,4 +1,4 @@
-import React, { use, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,12 @@ import {
 import { useLogin, refreshTokenNew } from '../hooks/createUserHook';
 import { LoginScreenProps } from '../screens/loginScreens'
 import  { getAccessToken, getRefreshToken, saveTokens, saveUser } from '../servicesSecure/authStorage'
+import { executeValidations } from '../utils/Utils';
+
+type ValidationError = {
+  valid: boolean;
+  description: string;
+};
 
 const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
     const [email, setEmail] = useState<string>('');
@@ -21,17 +27,43 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
     const [phoneNumber, setPhoneNumber] = useState<string>('');
     const [fullName, setFullName] = useState<string>('');
     const [nickName, setNickName] = useState<string>('');
+    const [validations, setValidations] = useState<Record<string, ValidationError>>({});
     const loginMutation = useLogin();
     const refreshTokenMutation = refreshTokenNew();
 
     const handleLogin = () => {
+        const localPhoneNumber = phoneNumber.trim();
+        const validationMap = {
+          email: [
+            { value: email.trim(), type: 'empty', description: 'El correo electrónico es requerido.' },
+            { value: email.trim(), type: 'regex', regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, description: 'Ingresa un correo electrónico válido.' },
+          ],
+          password: [
+            { value: password, type: 'empty', description: 'La contraseña es requerida.' },
+            { value: password, type: 'regex', regex: /^(?=.*[A-Za-z])(?=.*\d).{8,}$/, description: 'La contraseña debe tener al menos 8 caracteres, una letra y un número.' },
+          ],
+          fullName: [
+            { value: fullName.trim(), type: 'empty', description: 'El nombre completo es requerido.' },
+            { value: fullName.trim(), type: 'regex', regex: /^.{1,20}$/, description: 'El nombre completo no puede superar los 20 caracteres.' },
+          ],
+          phoneNumber: [
+            { value: localPhoneNumber, type: 'empty', description: 'El número de teléfono es requerido.' },
+            { value: localPhoneNumber, type: 'regex', regex: /^\d{1,20}$/, description: 'El número de teléfono solo puede contener hasta 20 dígitos.' },
+          ],
+        };
+        const results = executeValidations(validationMap);
+        setValidations(results);
+
+        if (Object.keys(results).length > 0) {
+          return;
+        }
        
         loginMutation.mutate({
           email: email,
           password: password,
           fullname: fullName,
           nickname: nickName,
-          phone: phoneNumber
+          phone: `+591${localPhoneNumber}`
         }, {
             onSuccess: async (response) => {
               console.log('User created:', response.user);
@@ -46,6 +78,15 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
             }
             });
       };
+
+    const renderValidationError = (key: string) => {
+      const validation = validations[key];
+      if (!validation || validation.valid) {
+        return null;
+      }
+
+      return <Text style={styles.errorText}>{validation.description}</Text>;
+    };
 
       return (
         <KeyboardAvoidingView
@@ -65,6 +106,7 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
             value={email}
             onChangeText={setEmail}
           />
+          {renderValidationError('email')}
 
           <TextInput
             style={styles.input}
@@ -73,6 +115,7 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
             value={password}
             onChangeText={setPassword}
           />
+          {renderValidationError('password')}
     
           <TextInput
             style={styles.input}
@@ -80,7 +123,9 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
             autoCapitalize="none"
             value={fullName}
             onChangeText={setFullName}
+            maxLength={20}
           />
+          {renderValidationError('fullName')}
 
         <TextInput
             style={styles.input}
@@ -90,13 +135,26 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
             onChangeText={setNickName}
           />
 
-          <TextInput
-            style={styles.input}
-            placeholder="Phone number"
-            autoCapitalize="none"
-            value={phoneNumber}
-            onChangeText={setPhoneNumber}
-          />
+          <View style={styles.phoneRow}>
+            <View style={styles.countryArea}>
+              <View style={styles.flag} accessibilityLabel="Bandera de Bolivia">
+                <View style={[styles.flagStripe, styles.flagRed]} />
+                <View style={[styles.flagStripe, styles.flagYellow]} />
+                <View style={[styles.flagStripe, styles.flagGreen]} />
+              </View>
+              <Text style={styles.countryText}>Bolivia +591</Text>
+            </View>
+            <TextInput
+              style={styles.phoneInput}
+              placeholder="Número de teléfono *"
+              keyboardType="phone-pad"
+              autoComplete="tel"
+              maxLength={20}
+              value={phoneNumber}
+              onChangeText={text => setPhoneNumber(text.replace(/\D/g, ''))}
+            />
+          </View>
+          {renderValidationError('phoneNumber')}
     
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Create</Text>
@@ -135,6 +193,56 @@ const styles = StyleSheet.create({
       marginBottom: 16,
       borderWidth: 1,
       borderColor: '#ddd',
+    },
+    phoneRow: {
+      flexDirection: 'row',
+      height: 50,
+      marginBottom: 16,
+    },
+    countryArea: {
+      alignItems: 'center',
+      backgroundColor: '#fff',
+      borderBottomLeftRadius: 8,
+      borderTopLeftRadius: 8,
+      borderColor: '#ddd',
+      borderWidth: 1,
+      flexDirection: 'row',
+      paddingHorizontal: 10,
+    },
+    flag: {
+      borderColor: '#ccc',
+      borderWidth: StyleSheet.hairlineWidth,
+      height: 16,
+      marginRight: 6,
+      overflow: 'hidden',
+      width: 24,
+    },
+    flagStripe: {
+      flex: 1,
+    },
+    flagRed: { backgroundColor: '#D52B1E' },
+    flagYellow: { backgroundColor: '#F9E300' },
+    flagGreen: { backgroundColor: '#007A33' },
+    countryText: {
+      color: '#333',
+      fontSize: 12,
+      fontWeight: '600',
+    },
+    phoneInput: {
+      backgroundColor: '#fff',
+      borderBottomRightRadius: 8,
+      borderTopRightRadius: 8,
+      borderColor: '#ddd',
+      borderLeftWidth: 0,
+      borderWidth: 1,
+      flex: 1,
+      paddingHorizontal: 12,
+    },
+    errorText: {
+      color: '#C62828',
+      fontSize: 12,
+      marginBottom: 12,
+      marginTop: -10,
     },
     button: {
       backgroundColor: '#4CAF50',
