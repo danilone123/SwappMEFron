@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -18,6 +18,8 @@ import OfferingInView from '../components/OfferingInView';
 import OfferingOutView from '../components/OfferingOutView';
 import FollowingView from '../components/FollowingView';
 import ReplyQuestionsScreen from './ReplyQuestionsScreen';
+import { RouteProp } from '@react-navigation/native';
+import { PortalParamList } from './PortalStack';
 
 type TabRoute = {
   key: 'offers_in' | 'offers_out' | 'following' | 'questions';
@@ -27,15 +29,25 @@ type TabRoute = {
 interface Props {
   update?: boolean;
   navigation: any;
+  route: RouteProp<PortalParamList, 'Portal'>;
 }
 
 const Portal: React.FC<Props> = ({
     update,
     navigation,
+    route,
   }) => {
     const layout = useWindowDimensions();
   
     const [index, setIndex] = useState(0);
+
+    // A notification can target the Questions section while Portal is already
+    // mounted, so react to params instead of relying on an initial value only.
+    useEffect(() => {
+      if (route.params?.initialTab === 'questions') {
+        setIndex(3);
+      }
+    }, [route.params?.initialTab]);
   
     const routes = useMemo<TabRoute[]>(
       () => [

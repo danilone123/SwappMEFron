@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "259865913825",
+    "firebase_url": "https://testforme-9abfd.firebaseio.com",
+    "project_id": "testforme-9abfd",
+    "storage_bucket": "testforme-9abfd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:259865913825:android:a8b5f53ad04b0355a28aa0",
+        "android_client_info": {
+          "package_name": "com.webin.swapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "259865913825-6e1r6vgnbthc3krguljis8v3eb3tl7cp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD78uX52Pep7aS0mu30iBQJWbgbvopd9PY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "259865913825-6e1r6vgnbthc3krguljis8v3eb3tl7cp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -6,7 +6,9 @@ import { PostItem } from "./HomeScreen";
 import SinglePost from "./SinglePost"
 
 export type PortalParamList = {
-    Portal: undefined
+    Portal: {
+      initialTab?: 'questions';
+    } | undefined;
     OfferParamItem: {
       post: PostItem;
     }

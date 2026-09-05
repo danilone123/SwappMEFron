@@ -16,6 +16,8 @@
       "bundleIdentifier": "com.lizzo5421.swappME"
     },
     "android": {
+      "package": "com.webin.swapp",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -28,7 +30,14 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-secure-store"
-    ]
+      "expo-secure-store",
+      "expo-notifications",
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "13781135-c6aa-4cf0-8da7-1128f2c2b036"
+      }
+    }
   }
 }

@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getAccessToken, getRefreshToken, saveTokens, clearTokens } from "./authStorage"
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080', // change for device testing
+  baseURL: 'http://192.168.0.62:8080', // change for device testing
   timeout: 10000,
 });
 

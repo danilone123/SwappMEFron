@@ -86,6 +86,10 @@ export const createUser = async (email: string, password: string, fullname: stri
     return response.data;
   };
 
+  export const savePushToken = async (pushToken: string): Promise<void> => {
+    await api.post('/user/push-token', { pushToken });
+  };
+
   export type ItemResponse = {
     id: string,
     description: string,

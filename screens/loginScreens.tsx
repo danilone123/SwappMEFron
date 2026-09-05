@@ -8,10 +8,13 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
 } from 'react-native';
 
 import { loginUser } from '../hooks/loginHook';
 import  { saveTokens, saveUser } from '../servicesSecure/authStorage'
+import { savePushToken } from '../services/CreateUserService';
+import { registerForPushNotifications } from '../utils/PushNotification';
 
 export type LoginScreenProps = {
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
@@ -53,6 +56,17 @@ const LoginScreen = ({ setIsLoggedIn, navigation }: LoginScreenProps) => {
           console.log('Token access:', response.jwtToken);
           await saveTokens(response.jwtToken, response.refreshToken);
           await saveUser(response.user); 
+
+          try {
+            const pushToken = await registerForPushNotifications();
+            if (pushToken) {
+              await savePushToken(pushToken);
+            }
+          } catch (error) {
+            // A notification registration problem must not prevent a successful login.
+            console.warn('Unable to register push notifications:', error);
+          }
+
           setIsLoggedIn(true)
           
         }, 
@@ -67,41 +81,45 @@ const LoginScreen = ({ setIsLoggedIn, navigation }: LoginScreenProps) => {
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <View style={styles.containerTitle}>
-        <Text style={styles.title}>Login</Text>
-        <TouchableOpacity onPress={handleCreateUser}>
-        {/* style={styles.buttonText} */}
-        <Text >Create User</Text>
-      </TouchableOpacity>
-      <TouchableOpacity  onPress={handleForgotPassword}>
-        {/* style={styles.buttonText} */}
-        <Text >      Olvidaste el password?</Text>
-      </TouchableOpacity>
-      </View>
-      
+      <ScrollView
+        contentContainerStyle={styles.formContent}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.containerTitle}>
+          <Text style={styles.title}>Login</Text>
+          <TouchableOpacity onPress={handleCreateUser}>
+            {/* style={styles.buttonText} */}
+            <Text >Create User</Text>
+          </TouchableOpacity>
+          <TouchableOpacity  onPress={handleForgotPassword}>
+            {/* style={styles.buttonText} */}
+            <Text >      Olvidaste el password?</Text>
+          </TouchableOpacity>
+        </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        value={email}
-        onChangeText={setEmail}
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          value={email}
+          onChangeText={setEmail}
+        />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
@@ -111,9 +129,12 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f2f2f2',
+  },
+  formContent: {
+    flexGrow: 1,
     justifyContent: 'center',
     padding: 54,
-    backgroundColor: '#f2f2f2',
   },
   containerTitle: {
     // flex: 1,
