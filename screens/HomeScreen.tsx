@@ -206,6 +206,18 @@ const mockPosts: PostType[] = [
       fetchPosts(0, true);
     }, [navigation]);
 
+    useEffect(() => {
+      const itemId = route.params?.itemId;
+      if (!itemId || loading) return;
+
+      const post = posts.find(currentPost => currentPost.id === itemId);
+      // A missing post is intentional: DescriptionQuestionScreen will load it
+      // from /items/{id}. Clear the params first so refocusing Dashboard does
+      // not reopen the screen.
+      navigation.setParams({ itemId: undefined });
+      navigation.navigate('DescriptionQuestion', { post, itemId });
+    }, [loading, navigation, posts, route.params?.itemId]);
+
 //   export default function HomeScreen() {
     const handlePress = (item: Item) => {
         console.log("Clicked::::::", item);

@@ -87,6 +87,10 @@ export default function App() {
 
         if (token) {
           setIsLoggedIn(true);
+          console.log(
+            '[Notifications] Last notification payload:',
+            lastNotificationResponse?.notification.request.content.data,
+          );
           setInitialNotificationData(lastNotificationResponse?.notification.request.content.data);
         }
       } catch (e) {
@@ -116,6 +120,10 @@ export default function App() {
 
     // this adds a listener, it will listen for a tap of the user over a push notification
     const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(
+        '[Notifications] Response payload:',
+        response.notification.request.content.data,
+      );
       if (navigationRef.isReady()) {
         navigateFromNotification(navigationRef, response.notification.request.content.data);
       }

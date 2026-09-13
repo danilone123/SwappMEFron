@@ -16,14 +16,15 @@ import { PostItem } from "./HomeScreen";
 
   export type RootStackParamList = {
     Login: undefined;
-    Dashboard: { id?: string } | undefined;
+    Dashboard: { id?: string; itemId?: string } | undefined;
     CreateUser: undefined;
     Details: { item: Item }; // match your screen
     OfferParamItem: {
       post: PostItem;
     };
     DescriptionQuestion: {
-      post: PostItem;
+      post?: PostItem;
+      itemId?: string;
     };
     ForgotPassword: undefined
   };

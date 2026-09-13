@@ -10,6 +10,7 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 
 import { loginUser } from '../hooks/loginHook';
 import  { saveTokens, saveUser } from '../servicesSecure/authStorage'
@@ -24,6 +25,7 @@ export type LoginScreenProps = {
 const LoginScreen = ({ setIsLoggedIn, navigation }: LoginScreenProps) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const loginMutation = loginUser();
 
   const handleCreateUser = () => {
@@ -108,13 +110,29 @@ const LoginScreen = ({ setIsLoggedIn, navigation }: LoginScreenProps) => {
           onChangeText={setEmail}
         />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
+        <View style={styles.passwordInputContainer}>
+          <TextInput
+            style={styles.passwordInput}
+            placeholder="Password"
+            placeholderTextColor="#666"
+            selectionColor="#4CAF50"
+            secureTextEntry={!isPasswordVisible}
+            value={password}
+            onChangeText={setPassword}
+          />
+          <TouchableOpacity
+            onPress={() => setIsPasswordVisible(visible => !visible)}
+            accessibilityRole="button"
+            accessibilityLabel={isPasswordVisible ? 'Hide password' : 'Show password'}
+            style={styles.passwordVisibilityButton}
+          >
+            <Feather
+              name={isPasswordVisible ? 'eye-off' : 'eye'}
+              size={22}
+              color="#666"
+            />
+          </TouchableOpacity>
+        </View>
 
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Login</Text>
@@ -167,6 +185,25 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderWidth: 1,
     borderColor: '#ddd',
+  },
+  passwordInputContainer: {
+    height: 50,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  passwordInput: {
+    flex: 1,
+    height: '100%',
+    paddingHorizontal: 12,
+    color: '#000',
+  },
+  passwordVisibilityButton: {
+    padding: 14,
   },
   button: {
     backgroundColor: '#4CAF50',

@@ -118,6 +118,11 @@ export const createUser = async (email: string, password: string, fullname: stri
     return response.data;
   };
 
+  export const getItemById = async (itemId: string): Promise<ItemResponse> => {
+    const response = await api.get(`/items/${itemId}`);
+    return response.data;
+  };
+
   export const updateImage = async (
     itemId: string,
     image: {
@@ -277,6 +282,15 @@ export const createUser = async (email: string, password: string, fullname: stri
         `/items/me`,
       );
     
+      return response.data;
+    };
+
+  export const RejectedOffersMadeByMe = async (
+    ): Promise<ItemsOffered[]> => {
+      const response = await api.get(
+        `/items/rejected/me`,
+      );
+
       return response.data;
     };
 

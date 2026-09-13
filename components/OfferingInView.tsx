@@ -45,20 +45,11 @@ import React, {
   typeof ItemStatus[keyof typeof ItemStatus];
   
   type Props = {
-    update?: boolean;
-
-  
-    // openAnnouncementModal: any;
-    // openContactModal: any;
-  
-    //showActionSheetWithOptions: any;
+    /** A new value signals that a received-offer notification was opened. */
+    notificationRefreshKey?: number;
   };
-  
-  const OfferingInView: React.FC<Props> = ({
-    update,
-    //openAnnouncementModal,
-   // showActionSheetWithOptions,
-  }) => {
+
+  const OfferingInView: React.FC<Props> = ({ notificationRefreshKey }) => {
     const { showActionSheetWithOptions } = useActionSheet();
     const getOffersForMeMutation = getOffersForMe();
     const updateOfferMutation = updateUserOffer();
@@ -86,12 +77,12 @@ import React, {
     useEffect(() => {
       getItemsOfferedToMe();
     }, [getItemsOfferedToMe]);
-  
+
     useEffect(() => {
-      if (update) {
+      if (notificationRefreshKey !== undefined) {
         getItemsOfferedToMe();
       }
-    }, [update, getItemsOfferedToMe]);
+    }, [getItemsOfferedToMe, notificationRefreshKey]);
   
     const updateStatus = useCallback(
       async (post: ItemsOffered, status: ItemStatus) => {
@@ -107,13 +98,14 @@ import React, {
           setIsRefreshing(true);
           await updateOfferMutation.mutateAsync(data)
           
-          //update the status locally of the item selected
           setOffers((prevOffers) =>
-           prevOffers.map((offer) =>
-              offer.id === post.id
-              ? { ...offer, status }
-              : offer
-            )
+            status === ItemStatus.REJECTED
+              ? prevOffers.filter((offer) => offer.id !== post.id)
+              : prevOffers.map((offer) =>
+                  offer.id === post.id
+                    ? { ...offer, status }
+                    : offer
+                )
           );
         } catch (e) {
           console.log("error when updateing offer status", e);
@@ -132,12 +124,8 @@ import React, {
           setIsRefreshing(true);
           const data = {
             score: rateValue,
-            user: {
-              id: ratingItem.options.user.id,
-            },
-            offer: {
-              id: ratingItem.id,
-            }
+            userId: ratingItem.options.user.id,
+            offerId: ratingItem.id
           };
 
           await updateRatingMutation.mutateAsync(data)
@@ -213,19 +201,15 @@ import React, {
     };
 
     const openAnnouncementModal = (text: string, onSuccess: () => void) => {
-      //setVisible(true);
       console.log("openAnnouncementModal::: here class offeringInvView:::::text===", text);
       setMessage(text);
-      setOnSuccess(onSuccess);
+      // A function passed directly to a React state setter is treated as a
+      // state updater and is invoked immediately. Wrap it to store the
+      // callback itself for the modal's explicit Aceptar action.
+      setOnSuccess(() => onSuccess);
       setVisible(true);
-    //   <AnnouncementModal
-    //   visible={visible}
-    //   message={text}
-    //   onClose={() => setVisible(false)}
-    // />
     };
-    
-  
+
     const renderItem = ({ item }: { item: ItemsOffered }) => (
       <OfferingInItem
         post={item}

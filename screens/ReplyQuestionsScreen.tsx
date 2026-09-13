@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -21,31 +21,40 @@ import {
 
 type QuestionWithDraft = Question & { draftReply: string };
 
-export default function ReplyQuestionsScreen() {
+type ReplyQuestionsScreenProps = {
+  /** Changes only when this tab is opened from a push notification. */
+  notificationRefreshKey?: number;
+};
+
+export default function ReplyQuestionsScreen({
+  notificationRefreshKey,
+}: ReplyQuestionsScreenProps) {
   const [questions, setQuestions] = useState<QuestionWithDraft[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const loadQuestions = async () => {
-      try {
-        const pendingQuestions = await getPendingItemQuestions();
-        setQuestions(
-          pendingQuestions.map(question => ({
-            ...question,
-            draftReply: question.reply ?? '',
-          })),
-        );
-      } catch (error) {
-        console.error('Unable to load pending questions:', error);
-        Alert.alert('Error', 'No se pudieron cargar las preguntas pendientes.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    // This endpoint is intentionally called once when this screen is mounted.
-    loadQuestions();
+  const loadQuestions = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const pendingQuestions = await getPendingItemQuestions();
+      setQuestions(
+        pendingQuestions.map(question => ({
+          ...question,
+          draftReply: question.reply ?? '',
+        })),
+      );
+    } catch (error) {
+      console.error('Unable to load pending questions:', error);
+      Alert.alert('Error', 'No se pudieron cargar las preguntas pendientes.');
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    // On the initial mount this loads the tab. Later it runs again only when a
+    // notification supplies a new refresh key.
+    loadQuestions();
+  }, [loadQuestions, notificationRefreshKey]);
 
   const updateDraft = (questionId: string | number, draftReply: string) => {
     setQuestions(current =>

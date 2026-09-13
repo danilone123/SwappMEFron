@@ -20,7 +20,10 @@ import React, {
   import OfferingOutItem from '../components/OfferingOutItem';
   import LoadingIndicator from '../components/LoadingIndicator';
   import { ItemsOffered } from '../services/CreateUserService';
-  import { getOffersMadeForMe } from '../hooks/createItemHook';
+  import {
+    getOffersMadeForMe,
+    getRejectedOffersMadeByMe,
+  } from '../hooks/createItemHook';
   import { updateUserOffer } from '../hooks/offerHook';
   
   import {
@@ -48,10 +51,12 @@ import React, {
     
     const updateOfferMutation = updateUserOffer();
     const getOffersMadeForMeMutation = getOffersMadeForMe();
+    const getRejectedOffersMadeByMeMutation = getRejectedOffersMadeByMe();
   
     const [offers, setOffers] = useState<
     ItemsOffered[]
     >([]);
+    const [rejectedOffers, setRejectedOffers] = useState<ItemsOffered[]>([]);
   
     const [isRefreshing, setIsRefreshing] =
       useState(false);
@@ -63,8 +68,14 @@ import React, {
       try {
         setIsRefreshing(true);
   
-        const response = await getOffersMadeForMeMutation.mutateAsync();
-        setOffers(response);
+        const [response, rejectedResponse] = await Promise.all([
+          getOffersMadeForMeMutation.mutateAsync(),
+          getRejectedOffersMadeByMeMutation.mutateAsync(),
+        ]);
+        setOffers(
+          response.filter((offer) => offer.status !== ItemStatus.REJECTED)
+        );
+        setRejectedOffers(rejectedResponse);
 
       } catch (error) {
         console.log(error);
@@ -168,6 +179,23 @@ import React, {
         //modalFunction={() => {}}
       />
     );
+
+    const renderRejectedOffers = () => {
+      if (rejectedOffers.length === 0) return null;
+
+      return (
+        <View>
+          {rejectedOffers.map((offer) => (
+            <OfferingOutItem
+              key={offer.id}
+              post={offer}
+              updateStatus={updateStatus}
+              contactFunction={contactFunction}
+            />
+          ))}
+        </View>
+      );
+    };
   
     if (isLoading) {
       return <LoadingIndicator />;
@@ -176,7 +204,7 @@ import React, {
     return (
       <View style={styles.container}>
         <View style={styles.body}>
-          {offers.length === 0 ? (
+          {offers.length === 0 && rejectedOffers.length === 0 ? (
             <View
               style={
                 styles.noItemsMessageContainer
@@ -199,6 +227,7 @@ import React, {
               data={offers}
               keyExtractor={item => item.id}
               renderItem={renderItem}
+              ListHeaderComponent={renderRejectedOffers}
               style={styles.itemList}
               refreshControl={
                 <RefreshControl

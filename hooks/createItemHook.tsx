@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { getItemQuestions, Question, UpdateFollowItem, FollowingItems, ItemsOffered, OfferForME, OffersMadeForME, createItem, CreateItemPayload, CreateItemResponse, getItems, ItemResponse, updateImage, getMyItems, OfferAItem, OfferAItemStruct, createItemQuestion } from '../services/CreateUserService'
+import { getItemQuestions, Question, UpdateFollowItem, FollowingItems, ItemsOffered, OfferForME, OffersMadeForME, RejectedOffersMadeByMe, createItem, CreateItemPayload, CreateItemResponse, getItems, getItemById, ItemResponse, updateImage, getMyItems, OfferAItem, OfferAItemStruct, createItemQuestion } from '../services/CreateUserService'
 
 export const createNewItem = () => {
     return useMutation<CreateItemResponse, Error, CreateItemPayload>({
@@ -11,6 +11,12 @@ export const getAllItems = () => {
     return useMutation<ItemResponse[], Error, number>({
         mutationFn: (page: number) => getItems(page),
       }); 
+};
+
+export const getItem = () => {
+    return useMutation<ItemResponse, Error, string>({
+        mutationFn: (itemId: string) => getItemById(itemId),
+      });
 };
 
 export const useUploadImage = () => {
@@ -50,6 +56,12 @@ export const getOffersMadeForMe = () => {
   return useMutation<ItemsOffered[], Error>({
     mutationFn: () => OffersMadeForME(),
   }); 
+}
+
+export const getRejectedOffersMadeByMe = () => {
+  return useMutation<ItemsOffered[], Error>({
+    mutationFn: () => RejectedOffersMadeByMe(),
+  });
 }
 
 export const getFollowingItems = () => {

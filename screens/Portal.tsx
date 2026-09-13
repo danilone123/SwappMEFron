@@ -27,13 +27,11 @@ type TabRoute = {
 };
 
 interface Props {
-  update?: boolean;
   navigation: any;
   route: RouteProp<PortalParamList, 'Portal'>;
 }
 
 const Portal: React.FC<Props> = ({
-    update,
     navigation,
     route,
   }) => {
@@ -46,6 +44,10 @@ const Portal: React.FC<Props> = ({
     useEffect(() => {
       if (route.params?.initialTab === 'questions') {
         setIndex(3);
+      }
+
+      if (route.params?.initialTab === 'offers_in') {
+        setIndex(0);
       }
     }, [route.params?.initialTab]);
   
@@ -72,16 +74,16 @@ const Portal: React.FC<Props> = ({
     );
   
     const renderScene = ({
-      route,
+      route: tabRoute,
     }: {
       route: TabRoute;
     }) => {
-      switch (route.key) {
+      switch (tabRoute.key) {
         case 'offers_in':
-          return <OfferingInView update={update} />;
+          return <OfferingInView notificationRefreshKey={route.params?.notificationRefreshKey}/>;
   
         case 'offers_out':
-          return <OfferingOutView update={update} />;
+          return <OfferingOutView />;
   
         case 'following':
           return (
@@ -92,7 +94,11 @@ const Portal: React.FC<Props> = ({
           );
 
         case 'questions':
-          return <ReplyQuestionsScreen />;
+          return (
+            <ReplyQuestionsScreen
+              notificationRefreshKey={route.params?.notificationRefreshKey}
+            />
+          );
   
         default:
           return null;

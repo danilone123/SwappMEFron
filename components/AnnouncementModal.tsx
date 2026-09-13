@@ -30,11 +30,15 @@ const AnnouncementModal: React.FC<AnnouncementModalProps> = ({
     onSuccess?.();      // Execute callback if provided
   };
 
+  const handleDismiss = () => {
+    onClose();
+  };
+
   return (
     <Modal
       isVisible={visible}
-      onBackdropPress={handleAccept}
-      onBackButtonPress={handleAccept}
+      onBackdropPress={handleDismiss}
+      onBackButtonPress={handleDismiss}
       useNativeDriver
     >
       <View style={styles.container}>

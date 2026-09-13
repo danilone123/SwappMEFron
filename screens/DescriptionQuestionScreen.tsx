@@ -18,8 +18,10 @@ import ProductRow from '../components/ProductRow';
 import { colors, textStyles } from '../styles';
 import { itemTypes } from '../utils/constants';
 import { RootStackParamList } from './DescriptionScreen';
-import { createQuestionForItem, getQuestionsForItem } from '../hooks/createItemHook';
+import { createQuestionForItem, getItem, getQuestionsForItem } from '../hooks/createItemHook';
 import { Question } from '../services/CreateUserService'
+import { PostItem } from './HomeScreen';
+import { _parseItem } from '../utils/PostParsing';
 
 
 
@@ -71,17 +73,42 @@ const getImageSource = (images: any) => {
 };
 
 export default function DescriptionQuestionScreen({ route, navigation }: Props) {
-  const post = route.params.post;
+  const [post, setPost] = useState<PostItem | undefined>(route.params.post);
+  const [itemLoadError, setItemLoadError] = useState<string | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);//useState<PostItem[]>([]);
   const [questionText, setQuestionText] = useState('');
   const createQuestionMutation = createQuestionForItem();
-  const getQuestionsMutation = getQuestionsForItem()
-  const imageSource = useMemo(() => getImageSource(post.images), [post.images]);
+  const getQuestionsMutation = getQuestionsForItem();
+  const getItemMutation = getItem();
+  const imageSource = useMemo(() => getImageSource(post?.images), [post?.images]);
+
+  useEffect(() => {
+    if (route.params.post) {
+      setPost(route.params.post);
+      setItemLoadError(null);
+      return;
+    }
+
+    const itemId = route.params.itemId;
+    if (!itemId) {
+      setItemLoadError('No se encontró el artículo solicitado.');
+      return;
+    }
+
+    setPost(undefined);
+    setItemLoadError(null);
+    getItemMutation.mutateAsync(itemId)
+      .then(item => setPost(_parseItem(item) as PostItem))
+      .catch(error => {
+        console.error('Error loading item:', error);
+        setItemLoadError('No se pudo cargar el artículo. Inténtalo nuevamente.');
+      });
+  }, [route.params.itemId, route.params.post]);
 
   const fetchQuestions = async () => {
+    if (!post) return;
     try {
       const listOfQuestions = await getQuestionsMutation.mutateAsync(post.id)
-      console.log("listOfquestions first date", listOfQuestions[0].userQuestionDate);
       setQuestions(listOfQuestions)
 
     } catch (error) {
@@ -91,13 +118,17 @@ export default function DescriptionQuestionScreen({ route, navigation }: Props) 
 
   useEffect(() => {
     fetchQuestions();
-  }, []);
+  }, [post?.id]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity
-          onPress={() => navigation.navigate('OfferParamItem', { post })}
+          onPress={() => {
+            if (post) {
+              navigation.navigate('OfferParamItem', { post });
+            }
+          }}
           style={styles.offerButton}
         >
           <Text style={styles.offerButtonText}>Ofertar</Text>
@@ -108,7 +139,7 @@ export default function DescriptionQuestionScreen({ route, navigation }: Props) 
 
   const sendQuestion = async () => {
     const trimmedQuestion = questionText.trim();
-    if (!trimmedQuestion || createQuestionMutation.isPending) return;
+    if (!post || !trimmedQuestion || createQuestionMutation.isPending) return;
 
     try {
       const response = await createQuestionMutation.mutateAsync({
@@ -135,6 +166,18 @@ export default function DescriptionQuestionScreen({ route, navigation }: Props) 
       console.error('Error creating item question:', error);
     }
   };
+
+  if (!post) {
+    return (
+      <View style={styles.centeredState}>
+        {getItemMutation.isPending ? (
+          <ActivityIndicator size="large" color={colors.BLUE} />
+        ) : (
+          <Text style={styles.stateText}>{itemLoadError}</Text>
+        )}
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
@@ -241,6 +284,8 @@ export default function DescriptionQuestionScreen({ route, navigation }: Props) 
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F5F5F5' },
+  centeredState: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, backgroundColor: '#F5F5F5' },
+  stateText: { color: '#262626', fontSize: 16, textAlign: 'center' },
   content: { padding: 16, paddingBottom: 24 },
   postCard: { backgroundColor: '#FFFFFF', borderRadius: 12, overflow: 'hidden' },
   image: { width: '100%', height: 260, backgroundColor: '#E6E6E6' },

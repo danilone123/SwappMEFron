@@ -68,6 +68,9 @@ const OfferingOutItem: FC<Props> = ({
   updateStatus,
   contactFunction,
 }) => {
+  const isRejected = post.status === ItemStatus.REJECTED;
+  const isCompleted = post.status === ItemStatus.COMPLETED;
+
   const itemImage = useMemo(() => {
     const images = post.firstItem.item?.images;
 
@@ -122,7 +125,13 @@ const OfferingOutItem: FC<Props> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        isCompleted && styles.completedContainer,
+        isRejected && styles.rejectedContainer,
+      ]}
+    >
       <View style={styles.imgContainer}>
         <Image
           source={{ uri: itemImage }}
@@ -132,8 +141,17 @@ const OfferingOutItem: FC<Props> = ({
 
       <View style={styles.bodyContainer}>
         <View style={styles.header}>
-          <Text style={textStyles.pharagrah}>
-            Has realizado una oferta a
+          <Text
+            style={[
+              textStyles.pharagrah,
+              isRejected && styles.rejectedText,
+            ]}
+          >
+            {isRejected
+              ? 'Oferta rechazada'
+              : isCompleted
+                ? 'Oferta completada!'
+                : 'Has realizado una oferta a'}
           </Text>
           {/* style={textStyles.title_H2} */}
           <Text >
@@ -178,7 +196,7 @@ const OfferingOutItem: FC<Props> = ({
           </View>
         ) : ( */}
         
-        {post.status !== ItemStatus.COMPLETED &&(
+        {!isCompleted && !isRejected &&(
           <TouchableOpacity
             style={styles.buttonReject}
             onPress={() =>
@@ -209,6 +227,18 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingVertical: 10,
     paddingHorizontal: 10,
+  },
+
+  completedContainer: {
+    backgroundColor: colors.GREEN,
+  },
+
+  rejectedContainer: {
+    backgroundColor: colors.GRAY,
+  },
+
+  rejectedText: {
+    color: colors.RED,
   },
 
   bodyContainer: {
