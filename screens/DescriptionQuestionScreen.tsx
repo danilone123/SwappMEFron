@@ -2,6 +2,7 @@ import React, { useLayoutEffect, useMemo, useState, useEffect } from 'react';
 import {
   Image,
   ActivityIndicator,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -77,6 +78,7 @@ export default function DescriptionQuestionScreen({ route, navigation }: Props) 
   const [itemLoadError, setItemLoadError] = useState<string | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);//useState<PostItem[]>([]);
   const [questionText, setQuestionText] = useState('');
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const createQuestionMutation = createQuestionForItem();
   const getQuestionsMutation = getQuestionsForItem();
   const getItemMutation = getItem();
@@ -119,6 +121,22 @@ export default function DescriptionQuestionScreen({ route, navigation }: Props) 
   useEffect(() => {
     fetchQuestions();
   }, [post?.id]);
+
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+
+    const showSubscription = Keyboard.addListener('keyboardDidShow', event => {
+      setKeyboardHeight(event.endCoordinates.height);
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -184,7 +202,11 @@ export default function DescriptionQuestionScreen({ route, navigation }: Props) 
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.postCard}>
           <Image source={imageSource} style={styles.image} resizeMode="cover" />
 
@@ -254,7 +276,14 @@ export default function DescriptionQuestionScreen({ route, navigation }: Props) 
         ))}
       </ScrollView>
 
-      <View style={styles.questionInputContainer}>
+      <View
+        style={[
+          styles.questionInputContainer,
+          Platform.OS === 'android' && keyboardHeight > 0 && {
+            marginBottom: keyboardHeight,
+          },
+        ]}
+      >
         <TextInput
           value={questionText}
           onChangeText={setQuestionText}
@@ -286,7 +315,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F5F5F5' },
   centeredState: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, backgroundColor: '#F5F5F5' },
   stateText: { color: '#262626', fontSize: 16, textAlign: 'center' },
-  content: { padding: 16, paddingBottom: 24 },
+  content: { flexGrow: 1, padding: 16, paddingBottom: 32 },
   postCard: { backgroundColor: '#FFFFFF', borderRadius: 12, overflow: 'hidden' },
   image: { width: '100%', height: 260, backgroundColor: '#E6E6E6' },
   productRows: { paddingHorizontal: 12, paddingTop: 8 },

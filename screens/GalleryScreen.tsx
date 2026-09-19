@@ -10,6 +10,7 @@ import React, {
   import {
     Dimensions,
     Image,
+    Platform,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -92,21 +93,27 @@ import ExpoCropper from '../components/ExpoCropper';
         sortBy: [MediaLibrary.SortBy.default],
       });
 
-      const enriched = await Promise.all(
-        media.assets.map(async (asset) => {
-          const info = await MediaLibrary.getAssetInfoAsync(asset);
-          return {
-            ...asset,
-            id: info.id,
-            uri: info.localUri ?? asset.uri,
-          };
-        })
-      );
-  
-      setData(enriched);
-  
-      if (enriched.length > 0) {
-        setImageSelected(enriched[0]);
+      // iOS may return a Photos-library URI that the cropper cannot read, so
+      // resolve a local URI there. Avoid this on Android because resolving
+      // full asset info reads EXIF location metadata and requires
+      // ACCESS_MEDIA_LOCATION.
+      const assets = Platform.OS === 'ios'
+        ? await Promise.all(
+            media.assets.map(async (asset) => {
+              const info = await MediaLibrary.getAssetInfoAsync(asset);
+
+              return {
+                ...asset,
+                uri: info.localUri ?? asset.uri,
+              };
+            })
+          )
+        : media.assets;
+
+      setData(assets);
+
+      if (assets.length > 0) {
+        setImageSelected(assets[0]);
       }
     }, []);
   

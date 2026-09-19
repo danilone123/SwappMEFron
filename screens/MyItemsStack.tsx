@@ -10,6 +10,7 @@ export type MyPostParamList = {
         post: PostItem;
         isOffertable: boolean;
         hideActions?: boolean;
+        showQuestions?: boolean;
       };
 };
 

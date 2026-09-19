@@ -121,7 +121,7 @@ export default CategoryAutocomplete;
 
 const styles = StyleSheet.create({
   screen: {
-    height: '95%',
+    flex: 1,
     width: '100%',
     paddingTop: 10,
     alignItems: 'flex-start',

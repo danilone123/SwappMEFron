@@ -7,7 +7,7 @@ import SinglePost from "./SinglePost"
 
 export type PortalParamList = {
     Portal: {
-      initialTab?: 'offers_in' | 'questions';
+      initialTab?: 'offers_in' | 'offers_out' | 'questions';
       notificationRefreshKey?: number;
     } | undefined;
     OfferParamItem: {
@@ -17,6 +17,7 @@ export type PortalParamList = {
       post: PostItem;
       isOffertable: boolean;
       hideActions?: boolean;
+      showQuestions?: boolean;
     };
 };
 

@@ -111,9 +111,7 @@ const Post: React.FC<Props> = ({
     try {
       const payLoad = {
         follows: !follows,
-        item: {
-          id: post.id
-        }
+        itemId: post.id
       }
 
       const response = await updateFollowItemMutation.mutateAsync(payLoad);
@@ -257,18 +255,18 @@ const Post: React.FC<Props> = ({
         <TouchableOpacity 
         // onPress={() => openMessagesModal(post)}
         >
-          <Text style={textStyles.label}>
+          {/* <Text style={textStyles.label}>
             {post.numberComments} Comentarios
-          </Text>
+          </Text> */}
         </TouchableOpacity>
 
         {isOffertable === false && (
           <View style={styles.statusDescription}>
             <Text style={textStyles.label}>
-              Your current status is: {post.status}
+              Estado del producto es: {post.status}
             </Text>
             <Text style={textStyles.label}>
-              Only open items can be used to make a swapp.
+              Solamente items con status 'open' pueden ser usados para hacer swapp.
             </Text>
           </View>
         )}

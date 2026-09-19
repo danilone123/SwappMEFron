@@ -40,12 +40,11 @@ import React, {
     typeof ItemStatus[keyof typeof ItemStatus];
   
   type Props = {
-    update?: boolean;
+    /** A new value signals that a made-offer notification was opened. */
+    notificationRefreshKey?: number;
   };
   
-  const OfferingOutView: React.FC<Props> = ({
-    update,
-  }) => {
+  const OfferingOutView: React.FC<Props> = ({ notificationRefreshKey }) => {
     const { showActionSheetWithOptions } =
       useActionSheet();
     
@@ -89,10 +88,10 @@ import React, {
     }, [loadItems]);
   
     useEffect(() => {
-      if (update) {
+      if (notificationRefreshKey !== undefined) {
         loadItems();
       }
-    }, [update, loadItems]);
+    }, [loadItems, notificationRefreshKey]);
   
     const updateStatus = useCallback(
       async (
@@ -185,6 +184,9 @@ import React, {
 
       return (
         <View>
+          <Text style={styles.rejectedOffersTitle}>
+            Ofertas Rechazadas
+          </Text>
           {rejectedOffers.map((offer) => (
             <OfferingOutItem
               key={offer.id}
@@ -227,7 +229,7 @@ import React, {
               data={offers}
               keyExtractor={item => item.id}
               renderItem={renderItem}
-              ListHeaderComponent={renderRejectedOffers}
+              ListFooterComponent={renderRejectedOffers}
               style={styles.itemList}
               refreshControl={
                 <RefreshControl
@@ -268,5 +270,10 @@ import React, {
     itemList: {
       width: '100%',
       height: '100%',
+    },
+    rejectedOffersTitle: {
+      ...textStyles.label,
+      marginTop: 16,
+      marginHorizontal: 10,
     },
   });

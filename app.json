@@ -17,6 +17,8 @@
     },
     "android": {
       "package": "com.webin.swapp",
+      "usesCleartextTraffic": true,
+      "softwareKeyboardLayoutMode": "resize",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",

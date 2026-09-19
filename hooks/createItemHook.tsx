@@ -84,7 +84,7 @@ export const createQuestionForItem = () => {
 };
 
 export const getQuestionsForItem = () => {
-  return useMutation<[Question], Error, string>({
+  return useMutation<Question[], Error, string>({
     mutationFn: ( itemID: string ) =>
     getItemQuestions(itemID),
   });

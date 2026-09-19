@@ -83,7 +83,7 @@ const ProfileScreen: React.FC<Props> = ({
                 <Feather
                   name="edit"
                   size={18}
-                  color={colors.BLACK_LIGHT}
+                  color={colors.BLACK}
                 />{' '}
                 Editar Información Personal
               </Text>
@@ -91,7 +91,7 @@ const ProfileScreen: React.FC<Props> = ({
               <Feather
                 name="chevron-right"
                 size={20}
-                color={colors.BLACK_LIGHT}
+                color={colors.BLACK}
               />
             </View>
           </TouchableOpacity>
@@ -109,7 +109,7 @@ const ProfileScreen: React.FC<Props> = ({
                 <Feather
                   name="lock"
                   size={18}
-                  color={colors.BLACK_LIGHT}
+                  color={colors.BLACK}
                 />{' '}
                 Cambiar Contraseña
               </Text>
@@ -117,7 +117,7 @@ const ProfileScreen: React.FC<Props> = ({
               <Feather
                 name="chevron-right"
                 size={20}
-                color={colors.BLACK_LIGHT}
+                color={colors.BLACK}
               />
             </View>
           </TouchableOpacity>
@@ -143,7 +143,7 @@ const ProfileScreen: React.FC<Props> = ({
               <Feather
                 name="chevron-right"
                 size={20}
-                color={colors.BLACK_LIGHT}
+                color={colors.BLACK}
               />
             </View>
           </TouchableOpacity>

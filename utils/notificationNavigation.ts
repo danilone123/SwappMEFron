@@ -4,7 +4,8 @@ export type NotificationDestination =
   | { name: 'home' }
   | { name: 'replyQuestions' }
   | { name: 'descriptionQuestion'; post?: unknown; itemId: string }
-  | { name: 'offersReceived' };
+  | { name: 'offersReceived' }
+  | { name: 'offersMadeReceived' }
 
 /**
  * Converts untrusted push data into one of the few destinations the app supports.
@@ -21,6 +22,9 @@ export function getNotificationDestination(data: unknown): NotificationDestinati
   switch (payload.type) {
     case 'offersReceivedScreen':
       return { name: 'offersReceived' };
+
+    case 'offersMadeScreen':
+      return {name: 'offersMadeReceived'}
 
     case 'replyQuestionsScreen':
       return { name: 'replyQuestions' };
@@ -98,6 +102,13 @@ export function navigateFromNotification(
       navigation.navigate('Portal', {
         screen: 'Portal',
         params: { initialTab: 'offers_in', notificationRefreshKey: Date.now() },
+      });
+      return;
+
+    case 'offersMadeReceived':
+      navigation.navigate('Portal', {
+        screen: 'Portal',
+        params: { initialTab: 'offers_out', notificationRefreshKey: Date.now() },
       });
       return;
   }

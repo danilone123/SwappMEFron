@@ -103,17 +103,24 @@ export default function ReplyQuestionsScreen({
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+        keyboardShouldPersistTaps="handled"
+      >
         {questions.length === 0 && !isLoading ? (
           <Text style={styles.emptyText}>No tienes preguntas pendientes.</Text>
         ) : (
-          questions.map(question => (
-            <View
-              key={String(question.id ?? `${question.userID}-${question.userQuestionDate}-${question.userQuestion}`)}
-              style={styles.card}
-            >
+          questions.map(question => {
+            const hasReply = Boolean(question.reply);
+
+            return (
+              <View
+                key={String(question.id ?? `${question.userID}-${question.userQuestionDate}-${question.userQuestion}`)}
+                style={styles.card}
+              >
               <Text style={styles.itemDescription}>{question.itemDescription ?? 'Artículo sin descripción'}</Text>
               <Text style={styles.userName}>{question.userName}</Text>
               <Text style={styles.userQuestion}>{question.userQuestion}</Text>
@@ -134,14 +141,18 @@ export default function ReplyQuestionsScreen({
                 />
                 <TouchableOpacity
                   onPress={() => reply(question)}
-                  style={styles.replyButton}
-                  disabled={isLoading}
+                  style={[
+                    styles.replyButton,
+                    (isLoading || hasReply) && styles.replyButtonDisabled,
+                  ]}
+                  disabled={isLoading || hasReply}
                 >
                   <Text style={styles.replyButtonText}>Responder</Text>
                 </TouchableOpacity>
               </View>
-            </View>
-          ))
+              </View>
+            );
+          })
         )}
       </ScrollView>
 
@@ -156,7 +167,7 @@ export default function ReplyQuestionsScreen({
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F5F5F5' },
-  content: { padding: 16, paddingBottom: 24 },
+  content: { flexGrow: 1, padding: 16, paddingBottom: 32 },
   card: { backgroundColor: '#FFFFFF', borderRadius: 10, padding: 14, marginBottom: 12 },
   itemDescription: { color: '#262626', fontSize: 17, fontWeight: '700' },
   userName: { color: '#6B6B6B', fontSize: 14, marginTop: 4 },
@@ -165,6 +176,7 @@ const styles = StyleSheet.create({
   replyRow: { alignItems: 'flex-end', flexDirection: 'row', marginTop: 12 },
   input: { borderColor: '#D5D5D5', borderRadius: 8, borderWidth: 1, color: '#262626', flex: 1, maxHeight: 100, minHeight: 42, paddingHorizontal: 10, paddingVertical: 8 },
   replyButton: { alignSelf: 'stretch', backgroundColor: colors.BLUE, borderRadius: 8, justifyContent: 'center', marginLeft: 8, paddingHorizontal: 10 },
+  replyButtonDisabled: { backgroundColor: '#A8A8A8' },
   replyButtonText: { color: '#FFFFFF', fontSize: 13, fontWeight: '700', textTransform: 'uppercase' },
   emptyText: { color: '#6B6B6B', fontSize: 16, textAlign: 'center', marginTop: 32 },
   loadingOverlay: { alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.45)', bottom: 0, justifyContent: 'center', left: 0, position: 'absolute', right: 0, top: 0 },

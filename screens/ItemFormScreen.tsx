@@ -468,7 +468,11 @@ import React, {
                     setDescription
                   }
                   style={
-                    textStyles.input
+                    [
+                      textStyles.input,
+                      styles.input,
+                      styles.descriptionTextInput,
+                    ]
                   }
                   placeholder="Escribe una descripción"
                   placeholderTextColor={
@@ -488,7 +492,7 @@ import React, {
                   styles.buttonOffer
                 }
               >
-                <Text style={{ color: 'red' }}>
+                <Text style={styles.sectionLabel}>
 
                 
                   Ofrezco
@@ -499,8 +503,9 @@ import React, {
             <TextInput
               value={offer}
               onChangeText={setOffer}
-              style={textStyles.input}
+              style={[textStyles.input, styles.input]}
               placeholder="¿Que Ofreces?"
+              placeholderTextColor={colors.INPUT_TEXT}
             />
   
             {renderValidationError(
@@ -512,8 +517,9 @@ import React, {
                 offerCategory?.name ??
                 ''
               }
-              style={textStyles.input}
+              style={[textStyles.input, styles.input]}
               placeholder="Pertenece a categoría"
+              placeholderTextColor={colors.INPUT_TEXT}
               onTouchStart={() =>
                 onClickInput(
                   itemTypes.OFFERS
@@ -537,11 +543,7 @@ import React, {
                       styles.buttonSearch
                     }
                   >
-                    <Text
-                    //   style={
-                    //     textStyles.buttonSmall
-                    //   }
-                    >
+                    <Text style={styles.sectionLabel}>
                       Busco
                     </Text>
                   </View>
@@ -553,9 +555,10 @@ import React, {
                     setSearch
                   }
                   style={
-                    textStyles.input
+                    [textStyles.input, styles.input]
                   }
                   placeholder="¿Que buscas?"
+                  placeholderTextColor={colors.INPUT_TEXT}
                 />
   
                 {renderValidationError(
@@ -568,9 +571,10 @@ import React, {
                     ''
                   }
                   style={
-                    textStyles.input
+                    [textStyles.input, styles.input]
                   }
                   placeholder="Pertenece a categoría"
+                  placeholderTextColor={colors.INPUT_TEXT}
                   onTouchStart={() =>
                     onClickInput(
                       itemTypes.SEARCHING
@@ -639,12 +643,11 @@ import React, {
     formContainer: {
       marginTop: 10,
       marginHorizontal: 10,
+      gap: 8,
     },
   
     line: {
       ...globalStyles.containerHorizontal,
-  
-      marginVertical: 5,
   
       alignItems: 'center',
     },
@@ -652,15 +655,13 @@ import React, {
     imageDescLine: {
       ...globalStyles.containerHorizontal,
   
-      marginBottom: 10,
     },
   
     urgencyLabel: {
       ...textStyles.label,
   
       flex: 2,
-  
-      marginHorizontal: 10,
+      color: '#262626',
     },
   
     ratingContainer: {
@@ -674,13 +675,24 @@ import React, {
     },
   
     descriptionInput: {
-      ...globalStyles.pharagraphInput,
-  
       flex: 7,
-  
-      borderWidth: 0,
-  
       height: '100%',
+    },
+
+    descriptionTextInput: {
+      flex: 1,
+      textAlignVertical: 'top',
+    },
+
+    input: {
+      backgroundColor: colors.WHITE,
+      borderColor: '#B8B8B8',
+      borderRadius: 8,
+      borderWidth: 1,
+      color: '#262626',
+      minHeight: 44,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
     },
   
     buttonOffer: {
@@ -688,8 +700,9 @@ import React, {
   
       backgroundColor:
         colors.PURPLE,
-  
-      marginRight: 8,
+      borderRadius: 6,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
     },
   
     buttonSearch: {
@@ -697,14 +710,19 @@ import React, {
   
       backgroundColor:
         colors.BLUE_LIGHT,
-  
-      marginRight: 8,
+      borderRadius: 6,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+    },
+
+    sectionLabel: {
+      color: colors.WHITE,
+      fontWeight: '600',
     },
   
     errorContainer: {
       paddingLeft: 10,
   
-      marginBottom: 8,
     },
   
     errorText: {

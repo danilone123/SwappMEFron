@@ -232,7 +232,7 @@ export const createUser = async (email: string, password: string, fullname: stri
 
   export const getItemQuestions = async (
     itemId: string,
-  ): Promise<[Question]> => {
+  ): Promise<Question[]> => {
     const response = await api.get(
       `/item/questions/${itemId}`,
     );

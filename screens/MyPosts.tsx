@@ -20,6 +20,7 @@ export type RootStackParamList = {
     post: any;
     isOffertable: boolean;
     hideActions?: boolean;
+    showQuestions?: boolean;
   };
 };
 
@@ -107,7 +108,8 @@ const MyPostsScreen: React.FC<Props> = ({ navigation }) => {
                 navigation.navigate('SinglePost', {
                   post: item,
                   isOffertable: false,
-                  hideActions: true
+                  hideActions: true,
+                  showQuestions: true,
                 })
               }
             isRefreshing={isRefreshing}

@@ -49,6 +49,10 @@ const Portal: React.FC<Props> = ({
       if (route.params?.initialTab === 'offers_in') {
         setIndex(0);
       }
+
+      if (route.params?.initialTab === 'offers_out') {
+        setIndex(1);
+      }
     }, [route.params?.initialTab]);
   
     const routes = useMemo<TabRoute[]>(
@@ -83,7 +87,11 @@ const Portal: React.FC<Props> = ({
           return <OfferingInView notificationRefreshKey={route.params?.notificationRefreshKey}/>;
   
         case 'offers_out':
-          return <OfferingOutView />;
+          return (
+            <OfferingOutView
+              notificationRefreshKey={route.params?.notificationRefreshKey}
+            />
+          );
   
         case 'following':
           return (
