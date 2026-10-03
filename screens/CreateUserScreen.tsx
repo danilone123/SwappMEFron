@@ -10,6 +10,8 @@ import {
   Platform,
   ActivityIndicator
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import axios from 'axios';
 
 import { useLogin, refreshTokenNew } from '../hooks/createUserHook';
 import { LoginScreenProps } from '../screens/loginScreens'
@@ -24,6 +26,9 @@ type ValidationError = {
 const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [passwordVerification, setPasswordVerification] = useState<string>('');
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const [isPasswordVerificationVisible, setIsPasswordVerificationVisible] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState<string>('');
     const [fullName, setFullName] = useState<string>('');
     const [nickName, setNickName] = useState<string>('');
@@ -42,13 +47,17 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
             { value: password, type: 'empty', description: 'La contraseña es requerida.' },
             { value: password, type: 'regex', regex: /^(?=.*[A-Za-z])(?=.*\d).{8,}$/, description: 'La contraseña debe tener al menos 8 caracteres, una letra y un número.' },
           ],
+          passwordVerification: [
+            { value: passwordVerification, type: 'empty', description: 'La confirmación de contraseña es requerida.' },
+            { value: passwordVerification, type: 'compare', otherComponent: password, description: 'Las contraseñas no coinciden.' },
+          ],
           fullName: [
             { value: fullName.trim(), type: 'empty', description: 'El nombre completo es requerido.' },
             { value: fullName.trim(), type: 'regex', regex: /^.{1,20}$/, description: 'El nombre completo no puede superar los 20 caracteres.' },
           ],
           phoneNumber: [
             { value: localPhoneNumber, type: 'empty', description: 'El número de teléfono es requerido.' },
-            { value: localPhoneNumber, type: 'regex', regex: /^\d{1,20}$/, description: 'El número de teléfono solo puede contener hasta 20 dígitos.' },
+            { value: localPhoneNumber, type: 'regex', regex: /^\d{8}$/, description: 'El número de teléfono debe contener exactamente 8 dígitos.' },
           ],
         };
         const results = executeValidations(validationMap);
@@ -74,10 +83,14 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
               
             }, 
             onError: (error) => {
+                if (axios.isAxiosError(error) && error.response?.status === 409) {
+                  Alert.alert('Error', 'El usuario con el email/nickname ya existe');
+                  return;
+                }
                 console.log(error);
             }
             });
-      };
+      };//70611152
 
     const renderValidationError = (key: string) => {
       const validation = validations[key];
@@ -108,14 +121,43 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
           />
           {renderValidationError('email')}
 
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
+          <View style={styles.passwordInputContainer}>
+            <TextInput
+              style={styles.passwordInput}
+              placeholder="Password"
+              secureTextEntry={!isPasswordVisible}
+              value={password}
+              onChangeText={setPassword}
+            />
+            <TouchableOpacity
+              onPress={() => setIsPasswordVisible(visible => !visible)}
+              accessibilityRole="button"
+              accessibilityLabel={isPasswordVisible ? 'Hide password' : 'Show password'}
+              style={styles.passwordVisibilityButton}
+            >
+              <Feather name={isPasswordVisible ? 'eye-off' : 'eye'} size={22} color="#666" />
+            </TouchableOpacity>
+          </View>
           {renderValidationError('password')}
+
+          <View style={styles.passwordInputContainer}>
+            <TextInput
+              style={styles.passwordInput}
+              placeholder="Verify password"
+              secureTextEntry={!isPasswordVerificationVisible}
+              value={passwordVerification}
+              onChangeText={setPasswordVerification}
+            />
+            <TouchableOpacity
+              onPress={() => setIsPasswordVerificationVisible(visible => !visible)}
+              accessibilityRole="button"
+              accessibilityLabel={isPasswordVerificationVisible ? 'Hide verification password' : 'Show verification password'}
+              style={styles.passwordVisibilityButton}
+            >
+              <Feather name={isPasswordVerificationVisible ? 'eye-off' : 'eye'} size={22} color="#666" />
+            </TouchableOpacity>
+          </View>
+          {renderValidationError('passwordVerification')}
     
           <TextInput
             style={styles.input}
@@ -149,7 +191,7 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
               placeholder="Número de teléfono *"
               keyboardType="phone-pad"
               autoComplete="tel"
-              maxLength={20}
+              maxLength={8}
               value={phoneNumber}
               onChangeText={text => setPhoneNumber(text.replace(/\D/g, ''))}
             />
@@ -193,6 +235,25 @@ const styles = StyleSheet.create({
       marginBottom: 16,
       borderWidth: 1,
       borderColor: '#ddd',
+    },
+    passwordInputContainer: {
+      alignItems: 'center',
+      backgroundColor: '#fff',
+      borderColor: '#ddd',
+      borderRadius: 8,
+      borderWidth: 1,
+      flexDirection: 'row',
+      height: 50,
+      marginBottom: 16,
+    },
+    passwordInput: {
+      color: '#000',
+      flex: 1,
+      height: '100%',
+      paddingHorizontal: 12,
+    },
+    passwordVisibilityButton: {
+      padding: 14,
     },
     phoneRow: {
       flexDirection: 'row',

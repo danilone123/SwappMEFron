@@ -346,11 +346,23 @@ export const createUser = async (email: string, password: string, fullname: stri
     };
     //'/forgotPassword'
 
-    export const UpdatePassword =  async(data: any) : Promise<string> => {
+    export type ForgotPasswordResponse = {
+      status: number;
+    };
+
+    export const UpdatePassword = async(data: { username: string }): Promise<ForgotPasswordResponse> => {
       const response = await api.post(
         `/forgotPassword`,
         data
       );
     
-      return response.data;
+      return { status: response.status };
+    };
+
+    export const resetPassword = async (
+      email: string,
+      code: string,
+      password: string,
+    ): Promise<void> => {
+      await api.post('/resetPassword', { email, code, password });
     };

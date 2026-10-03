@@ -90,15 +90,8 @@ const LoginScreen = ({ setIsLoggedIn, navigation }: LoginScreenProps) => {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.containerTitle}>
-          <Text style={styles.title}>Login</Text>
-          <TouchableOpacity onPress={handleCreateUser}>
-            {/* style={styles.buttonText} */}
-            <Text >Create User</Text>
-          </TouchableOpacity>
-          <TouchableOpacity  onPress={handleForgotPassword}>
-            {/* style={styles.buttonText} */}
-            <Text >      Olvidaste el password?</Text>
-          </TouchableOpacity>
+          <Text style={styles.title}>Hola!</Text>
+          <Text style={styles.subtitle}>Inicia sesión para continuar en SwappMe</Text>
         </View>
 
         <TextInput
@@ -137,6 +130,15 @@ const LoginScreen = ({ setIsLoggedIn, navigation }: LoginScreenProps) => {
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
+
+        <View style={styles.accountActions}>
+          <TouchableOpacity onPress={handleForgotPassword}>
+            <Text style={styles.linkText}>¿Olvidaste tu contraseña?</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleCreateUser}>
+            <Text style={styles.linkText}>Crea una cuenta</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -147,75 +149,84 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#F5F7FB',
   },
   formContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: 54,
+    paddingHorizontal: 28,
+    paddingVertical: 32,
   },
   containerTitle: {
-    // flex: 1,
     alignItems: 'center',
-    flexDirection: 'row',
-    backgroundColor: 'red', 
-    alignSelf: 'center', 
-  },
-  createButton: {
-    backgroundColor: '#4CAF50',
-    height: 30,
-    borderRadius: 8,
-    justifyContent: 'center',
-    //alignItems: 'center',
-    // marginBottom: 16,
-    padding: 16
+    marginBottom: 36,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    //marginBottom: 32,
+    color: '#1B2540',
+    fontSize: 30,
+    fontWeight: '700',
     textAlign: 'center',
-    padding: 16
+  },
+  subtitle: {
+    color: '#718096',
+    fontSize: 15,
+    marginTop: 8,
+    textAlign: 'center',
   },
   input: {
     height: 50,
     backgroundColor: '#fff',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    marginBottom: 16,
+    borderRadius: 12,
+    color: '#1B2540',
+    paddingHorizontal: 16,
+    marginBottom: 14,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#D9E2F1',
   },
   passwordInputContainer: {
     height: 50,
     backgroundColor: '#fff',
-    borderRadius: 8,
-    marginBottom: 16,
+    borderRadius: 12,
+    marginBottom: 22,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#D9E2F1',
     flexDirection: 'row',
     alignItems: 'center',
   },
   passwordInput: {
     flex: 1,
     height: '100%',
-    paddingHorizontal: 12,
-    color: '#000',
+    paddingHorizontal: 16,
+    color: '#1B2540',
   },
   passwordVisibilityButton: {
     padding: 14,
   },
   button: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#2563EB',
     height: 50,
-    borderRadius: 8,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16
+    shadowColor: '#2563EB',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 3,
   },
   buttonText: {
     color: '#fff',
     fontSize: 18,
+    fontWeight: '600',
+  },
+  accountActions: {
+    alignItems: 'center',
+    gap: 16,
+    marginTop: 24,
+  },
+  linkText: {
+    color: '#2563EB',
+    fontSize: 14,
     fontWeight: '600',
   },
 });

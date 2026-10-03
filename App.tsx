@@ -15,6 +15,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { getAccessToken } from "./servicesSecure/authStorage"
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import ForgetPasswordForm from "./screens/ForgotPasswordScreen"
+import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import * as Notifications from 'expo-notifications';
 import { navigateFromNotification } from './utils/notificationNavigation';
 
@@ -59,6 +60,8 @@ function AuthStack({ setIsLoggedIn }: LoginScreenProps) {
            <ForgetPasswordForm  />
         )}
       </Stack.Screen>
+
+      <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
    
     </Stack.Navigator>
   );

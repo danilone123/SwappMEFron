@@ -26,7 +26,8 @@ import { PostItem } from "./HomeScreen";
       post?: PostItem;
       itemId?: string;
     };
-    ForgotPassword: undefined
+    ForgotPassword: undefined;
+    ResetPassword: { email: string };
   };
 
  type Props = NativeStackScreenProps<RootStackParamList, "Details">;

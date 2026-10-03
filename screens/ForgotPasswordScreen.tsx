@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 //import { useDispatch, useSelector } from 'react-redux';
@@ -19,7 +20,6 @@ import axios from 'axios';
 import AuthLoading from '../screens/AuthLoading';
 import { executeValidations } from '../utils/Utils';
 import { updateUserPassword } from '../hooks/createUserHook';
-import AnnouncementModal from '../components/AnnouncementModal';
 
 type ValidationResult = {
   valid: boolean;
@@ -31,32 +31,10 @@ const ForgetPasswordForm: React.FC = () => {
   //const dispatch = useDispatch<any>();
   const updatePasswordMutation = updateUserPassword();
   const [loading, setLoading] = useState(false);
-  const [visible, setVisible] = useState(false);
   const [email, setEmail] = useState('');
   const [validations, setValidations] = useState<
     Record<string, ValidationResult>
   >({});
-
-  const handleResponse = useCallback(async (response: Response) => {
-    console.log('status::::', response.status);
-
-    const text = await response.text();
-    const data = text ? JSON.parse(text) : null;
-
-    if (!response.ok) {
-      if (response.status === 403) {
-        throw 'El email o nickname no fue encontrado';
-      }
-
-      if (response.status === 404) {
-        throw 'El usuario no fue encontrado';
-      }
-
-      throw (data && data.message) || response.statusText;
-    }
-
-    return data;
-  }, []);
 
   const submit = useCallback(async () => {
       
@@ -93,12 +71,13 @@ const ForgetPasswordForm: React.FC = () => {
         }
         const response = await updatePasswordMutation.mutateAsync(emailBody);
 
-    //   dispatch(
-    //     openAnnouncementModal(
-    //       'Enviamos instrucciones a tu correo electrónico',
-    //       () => navigation.goBack(),
-    //     ),
-    //   );
+        if (response.status === 200) {
+          Alert.alert(
+            'Código enviado',
+            'Revisa tu correo electrónico e ingresa el código para restablecer tu contraseña.',
+            [{ text: 'Continuar', onPress: () => navigation.navigate('ResetPassword', { email }) }],
+          );
+        }
     } catch (error) {
       console.log("forgotPassword endpoint error:::::", error);
       const message = axios.isAxiosError(error)
@@ -109,10 +88,9 @@ const ForgetPasswordForm: React.FC = () => {
 
       console.log(message);
     } finally {
-        setVisible(true)
         setLoading(false)
     }
-  }, [ email, handleResponse, navigation]);
+  }, [email, navigation, updatePasswordMutation]);
 
   const emailError = useMemo(() => {
     const validation = validations.email;
@@ -130,12 +108,6 @@ const ForgetPasswordForm: React.FC = () => {
 
   return (
     <View style={styles.container}>
-        <AnnouncementModal
-            visible={visible}
-            message={'Enviamos instrucciones a tu correo electrónico'}
-            onClose={() => setVisible(false)}
-            onSuccess={() => navigation.goBack()}
-        />
       <ScrollView
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
@@ -146,7 +118,7 @@ const ForgetPasswordForm: React.FC = () => {
           <View style={globalStyles.input}>
             <TextInput
               style={textStyles.input}
-              placeholder="Email o Nickname"
+              placeholder="Emaiiill o Nickname"
               placeholderTextColor={colors.INPUT_TEXT}
               autoCapitalize="none"
               autoCorrect={false}
