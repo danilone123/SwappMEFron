@@ -366,3 +366,14 @@ export const createUser = async (email: string, password: string, fullname: stri
     ): Promise<void> => {
       await api.post('/resetPassword', { email, code, password });
     };
+
+    export type ChangePasswordPayload = {
+      currentPassword: string;
+      newPassword: string;
+    };
+
+    export const changePassword = async (
+      data: ChangePasswordPayload,
+    ): Promise<void> => {
+      await api.post('/user/password', data);
+    };

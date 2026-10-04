@@ -1,6 +1,6 @@
 
   import { useMutation } from '@tanstack/react-query';
-  import { createUser, CreateUserResponse, refreshToken, CreateTokenResponse, ForgotPasswordResponse, UpdatePersonalInformation, UpdatePassword, resetPassword } from '../services/CreateUserService'
+  import { changePassword, ChangePasswordPayload, createUser, CreateUserResponse, refreshToken, CreateTokenResponse, ForgotPasswordResponse, UpdatePersonalInformation, UpdatePassword, resetPassword } from '../services/CreateUserService'
 
   interface CreateUserInput {
     email: string;
@@ -49,5 +49,11 @@
   export const resetUserPassword = () => {
     return useMutation<void, Error, ResetPasswordInput>({
       mutationFn: ({ email, code, password }) => resetPassword(email, code, password),
+    });
+  };
+
+  export const changeUserPassword = () => {
+    return useMutation<void, Error, ChangePasswordPayload>({
+      mutationFn: changePassword,
     });
   };

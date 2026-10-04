@@ -124,7 +124,7 @@ const ProfileScreen: React.FC<Props> = ({
         </View>
 
         {/* Preferences */}
-        <View style={styles.buttonContainer}>
+        {/* <View style={styles.buttonContainer}>
           <TouchableOpacity
             onPress={() =>
               navigation.navigate('Details')
@@ -147,7 +147,7 @@ const ProfileScreen: React.FC<Props> = ({
               />
             </View>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
         {/* Logout */}
         <View style={styles.buttonContainer}>

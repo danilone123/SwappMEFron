@@ -17,6 +17,10 @@ import { updatePersonalInfo } from '../hooks/createUserHook';
 import LoadingIndicator from '../components/LoadingIndicator';
 
 const { width, height } = Dimensions.get('window');
+const BOLIVIA_COUNTRY_CODE = '+591';
+
+const getLocalPhoneNumber = (phone?: string) =>
+  phone?.replace(/^\+591/, '') ?? '';
 
 export type ValidationType = {
     valid: boolean;
@@ -76,6 +80,7 @@ const ProfileInfoScreen: React.FC<Props> = ({
 
 // 1. Wrap submit in a useCallback so it reconstructs whenever 'user' changes
   const submit = useCallback(async () => {
+    const localPhoneNumber = getLocalPhoneNumber(user?.phone).trim();
     const validationMap = {
       nickName: [
         {
@@ -86,14 +91,15 @@ const ProfileInfoScreen: React.FC<Props> = ({
       ],
       phone: [
         {
-          value: user?.phone,
-          regex: /^[0-9]{9}$/,
-          description: 'El Teléfono no es válido',
+          value: localPhoneNumber,
+          type: 'empty',
+          description: 'El número de teléfono es requerido.',
         },
         {
-          value: user?.phone, // Fixed: point to state, not string literal
-          type: 'empty',
-          description: 'Este campo es necesario',
+          value: localPhoneNumber,
+          type: 'regex',
+          regex: /^\d{8}$/,
+          description: 'El número de teléfono debe contener exactamente 8 dígitos.',
         },
       ],
       name: [
@@ -231,39 +237,36 @@ const ProfileInfoScreen: React.FC<Props> = ({
                   renderError("name")
                 }
   
-            <View style={styles.line}>
-                <View style={[globalStyles.input, {flex:1, marginRight: 10}]} >
-                    <TextInput
-                        style={textStyles.input}
-                        keyboardType='numeric'
-                        textContentType='telephoneNumber'
-                        placeholder="+56"
-                        editable={false}
-                        placeholderTextColor={colors.INPUT_TEXT}/>
-                  </View>
-                  <View style={[globalStyles.input, {flex:8}]} >
-                      <TextInput
-                        keyboardType='numeric'
-                        style={textStyles.input}
-                        placeholder="Telefono"
-                        maxLength={9}
-                        value={user?.phone.toString()}
-                        placeholderTextColor={colors.INPUT_TEXT}
-                        textContentType='telephoneNumber'
-                        onChangeText={text =>
-                            setUserData(prevUser => {
-                              // If there is no previous user state, create a default structure
-                              if (!prevUser) return null; 
-                              
-                              return {
-                                ...prevUser,
-                                phone: text, // Crucial: Match your interface's exact casing (lowercase 'n')
-                              };
-                            })
-                        }
-                        />
-                  </View>
+            <View style={styles.phoneRow}>
+              <View style={styles.countryArea}>
+                <View style={styles.flag} accessibilityLabel="Bandera de Bolivia">
+                  <View style={[styles.flagStripe, styles.flagRed]} />
+                  <View style={[styles.flagStripe, styles.flagYellow]} />
+                  <View style={[styles.flagStripe, styles.flagGreen]} />
                 </View>
+                <Text style={styles.countryText}>Bolivia {BOLIVIA_COUNTRY_CODE}</Text>
+              </View>
+              <TextInput
+                keyboardType="phone-pad"
+                style={styles.phoneInput}
+                placeholder="Número de teléfono *"
+                maxLength={8}
+                value={getLocalPhoneNumber(user?.phone)}
+                placeholderTextColor={colors.INPUT_TEXT}
+                textContentType="telephoneNumber"
+                autoComplete="tel"
+                onChangeText={text =>
+                  setUserData(prevUser => {
+                    if (!prevUser) return null;
+
+                    return {
+                      ...prevUser,
+                      phone: `${BOLIVIA_COUNTRY_CODE}${text.replace(/\D/g, '')}`,
+                    };
+                  })
+                }
+              />
+            </View>
                 {
                   renderError("phone")
                 }
@@ -291,6 +294,51 @@ const ProfileInfoScreen: React.FC<Props> = ({
       marginVertical: 5,
       flex: 1,
       justifyContent: 'flex-start',
+    },
+    phoneRow: {
+      flexDirection: 'row',
+      height: 50,
+      marginVertical: 5,
+    },
+    countryArea: {
+      alignItems: 'center',
+      backgroundColor: '#fff',
+      borderBottomLeftRadius: 8,
+      borderTopLeftRadius: 8,
+      borderColor: '#ddd',
+      borderWidth: 1,
+      flexDirection: 'row',
+      paddingHorizontal: 10,
+    },
+    flag: {
+      borderColor: '#ccc',
+      borderWidth: StyleSheet.hairlineWidth,
+      height: 16,
+      marginRight: 6,
+      overflow: 'hidden',
+      width: 24,
+    },
+    flagStripe: {
+      flex: 1,
+    },
+    flagRed: { backgroundColor: '#D52B1E' },
+    flagYellow: { backgroundColor: '#F9E300' },
+    flagGreen: { backgroundColor: '#007A33' },
+    countryText: {
+      color: '#333',
+      fontSize: 12,
+      fontWeight: '600',
+    },
+    phoneInput: {
+      backgroundColor: '#fff',
+      borderBottomRightRadius: 8,
+      borderTopRightRadius: 8,
+      borderColor: '#ddd',
+      borderLeftWidth: 0,
+      borderWidth: 1,
+      color: '#000',
+      flex: 1,
+      paddingHorizontal: 12,
     },
     separator: {
       flex: 0.1,

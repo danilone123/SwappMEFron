@@ -109,7 +109,7 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
 
             {/* {loginMutation.isPending && <Text>Loading...</Text>}
             {loginMutation.isError && <Text>Error!</Text>} */}
-          <Text style={styles.title}>Create User</Text>
+          <Text style={styles.title}>Crear Usuario</Text>
 
           <TextInput
             style={styles.input}
@@ -143,7 +143,7 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
           <View style={styles.passwordInputContainer}>
             <TextInput
               style={styles.passwordInput}
-              placeholder="Verify password"
+              placeholder="Verificar password"
               secureTextEntry={!isPasswordVerificationVisible}
               value={passwordVerification}
               onChangeText={setPasswordVerification}
@@ -161,7 +161,7 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
     
           <TextInput
             style={styles.input}
-            placeholder="Full name"
+            placeholder="Nombre completo"
             autoCapitalize="none"
             value={fullName}
             onChangeText={setFullName}
@@ -171,7 +171,7 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
 
         <TextInput
             style={styles.input}
-            placeholder="Nick name optional"
+            placeholder="Nick name opcional"
             autoCapitalize="none"
             value={nickName}
             onChangeText={setNickName}
