@@ -31,17 +31,26 @@ type TabParamList = {
          <Tab.Screen
         name="Home"
         component={HomeStack}
-        options={{ headerShown: false }} // important
+        options={{ 
+          headerShown: false,
+          tabBarLabel: "Swapp"
+        }} // important
       />
       <Tab.Screen 
         name="MyPost"
         component={MyItemsStack}
-        options={{ headerShown: false }}
+        options={{ 
+          headerShown: false,
+          tabBarLabel: "Mis Items",
+        }}
       />
         <Tab.Screen
         name="Search"
         component={ItemStack}
-        options={{ headerShown: false }} // important
+        options={{ 
+          headerShown: false,
+          tabBarLabel: "Crear Item",
+        }}
       />
       <Tab.Screen
         name="Portal"
@@ -56,7 +65,10 @@ type TabParamList = {
         /> */}
         <Tab.Screen 
         name="Profile" 
-        options={{ headerShown: false }}         
+        options={{ 
+          headerShown: false,
+          tabBarLabel: "Perfil",
+         }}         
       >
         {/* Render via function to pass the prop into the Stack */}
         {(props) => <ProfileStack {...props} setIsLoggedIn={setIsLoggedIn} />}

@@ -12,7 +12,11 @@ export default function ItemStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Gallery" component={GalleryScreen} />
-      <Stack.Screen name="ItemForm" component={ItemFormScreen} />
+      <Stack.Screen
+        name="ItemForm"
+        component={ItemFormScreen}
+        options={{ title: 'Crear Item' }}
+      />
 
       {/* <Stack.Screen name="ImageCrop" component={ImageCropScreen} /> */}
     </Stack.Navigator>

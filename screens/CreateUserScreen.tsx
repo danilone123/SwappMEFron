@@ -8,7 +8,8 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  ActivityIndicator
+  ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import axios from 'axios';
@@ -22,6 +23,8 @@ type ValidationError = {
   valid: boolean;
   description: string;
 };
+
+const PLACEHOLDER_COLOR = '#6B7280';
 
 const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
     const [email, setEmail] = useState<string>('');
@@ -104,8 +107,13 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
       return (
         <KeyboardAvoidingView
           style={styles.container}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
+          <ScrollView
+            contentContainerStyle={styles.content}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
 
             {/* {loginMutation.isPending && <Text>Loading...</Text>}
             {loginMutation.isError && <Text>Error!</Text>} */}
@@ -116,6 +124,7 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
             placeholder="Email"
             autoCapitalize="none"
             keyboardType="email-address"
+            placeholderTextColor={PLACEHOLDER_COLOR}
             value={email}
             onChangeText={setEmail}
           />
@@ -125,6 +134,7 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
             <TextInput
               style={styles.passwordInput}
               placeholder="Password"
+              placeholderTextColor={PLACEHOLDER_COLOR}
               secureTextEntry={!isPasswordVisible}
               value={password}
               onChangeText={setPassword}
@@ -144,6 +154,7 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
             <TextInput
               style={styles.passwordInput}
               placeholder="Verificar password"
+              placeholderTextColor={PLACEHOLDER_COLOR}
               secureTextEntry={!isPasswordVerificationVisible}
               value={passwordVerification}
               onChangeText={setPasswordVerification}
@@ -162,6 +173,7 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
           <TextInput
             style={styles.input}
             placeholder="Nombre completo"
+            placeholderTextColor={PLACEHOLDER_COLOR}
             autoCapitalize="none"
             value={fullName}
             onChangeText={setFullName}
@@ -172,6 +184,7 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
         <TextInput
             style={styles.input}
             placeholder="Nick name opcional"
+            placeholderTextColor={PLACEHOLDER_COLOR}
             autoCapitalize="none"
             value={nickName}
             onChangeText={setNickName}
@@ -189,6 +202,7 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
             <TextInput
               style={styles.phoneInput}
               placeholder="Número de teléfono *"
+              placeholderTextColor={PLACEHOLDER_COLOR}
               keyboardType="phone-pad"
               autoComplete="tel"
               maxLength={8}
@@ -201,6 +215,8 @@ const CreateUserScreen =  ({ setIsLoggedIn }: LoginScreenProps) => {
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Create</Text>
           </TouchableOpacity>
+
+          </ScrollView>
 
           {/* Centered Loading Overlay */}
       {loginMutation.isPending && (
@@ -217,9 +233,12 @@ export default CreateUserScreen;
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      justifyContent: 'center',
-      padding: 54,
       backgroundColor: '#f2f2f2',
+    },
+    content: {
+      flexGrow: 1,
+      justifyContent: 'center',
+      padding: 24,
     },
     title: {
       fontSize: 28,
@@ -235,6 +254,7 @@ const styles = StyleSheet.create({
       marginBottom: 16,
       borderWidth: 1,
       borderColor: '#ddd',
+      color: '#000',
     },
     passwordInputContainer: {
       alignItems: 'center',
@@ -297,6 +317,7 @@ const styles = StyleSheet.create({
       borderLeftWidth: 0,
       borderWidth: 1,
       flex: 1,
+      color: '#000',
       paddingHorizontal: 12,
     },
     errorText: {

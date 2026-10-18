@@ -15,7 +15,8 @@ import React, {
     TextInput,
     TouchableOpacity,
     View,
-    ActivityIndicator
+    ActivityIndicator,
+    BackHandler,
   } from 'react-native';
   
   import {
@@ -211,6 +212,8 @@ import React, {
 
       useLayoutEffect(() => {
         navigation.setOptions({
+          gestureEnabled: !isCreatingItem,
+          headerBackVisible: !isCreatingItem,
           headerRight: () => (
             <View
               style={[
@@ -247,6 +250,19 @@ import React, {
         isCreatingItem,
         openConditions
       ]);
+
+    useEffect(() => {
+      if (!isCreatingItem) {
+        return;
+      }
+
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        () => true,
+      );
+
+      return () => backHandler.remove();
+    }, [isCreatingItem]);
   
     // SUBMIT
   
@@ -398,12 +414,13 @@ import React, {
       };
   
     return (
-      <ScrollView
-        style={styles.container}
-        showsVerticalScrollIndicator={
-          false
-        }
-      >
+      <View style={styles.screen}>
+        <ScrollView
+          style={styles.container}
+          showsVerticalScrollIndicator={
+            false
+          }
+        >
         <ConditionsModal
           visible={showConditions}
           onCancel={() =>
@@ -427,12 +444,6 @@ import React, {
           }
         />
   
-      {isCreatingItem && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#ffffff" />
-        </View>
-      )}
-        
           <View
             style={
               styles.formContainer
@@ -630,11 +641,21 @@ import React, {
             </View>
           </View>
         
-      </ScrollView>
+        </ScrollView>
+
+        {isCreatingItem && (
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color="#ffffff" />
+          </View>
+        )}
+      </View>
     );
   };
   
   const styles = StyleSheet.create({
+    screen: {
+      flex: 1,
+    },
     container: {
       flex: 1,
       backgroundColor: 'white',
@@ -733,8 +754,10 @@ import React, {
     loadingOverlay: {
       ...StyleSheet.absoluteFillObject,
       backgroundColor: 'rgba(0,0,0,0.3)',
+      elevation: 1000,
       justifyContent: 'center',
       alignItems: 'center',
+      zIndex: 1000,
     },
   
     button: {

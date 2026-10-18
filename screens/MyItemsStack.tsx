@@ -19,8 +19,8 @@ const Stack = createNativeStackNavigator<MyPostParamList>();
 export default function MyItemsStack() {
     return (
       <Stack.Navigator>
-        <Stack.Screen name="MyPosts" component={MyPosts} />
-        <Stack.Screen name="SinglePost" component={SinglePost} />
+        <Stack.Screen name="MyPosts" component={MyPosts} options={{ title: 'Tus Items'}} />
+        <Stack.Screen name="SinglePost" component={SinglePost} options={{ title: 'Item'}}/>
       </Stack.Navigator>
     );
   }

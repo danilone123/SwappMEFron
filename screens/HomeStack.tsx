@@ -14,9 +14,9 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function HomeStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Dashboard" component={HomeScreen} />
+      <Stack.Screen name="Dashboard" component={HomeScreen} options={{ title: 'Swapp'}} />
       <Stack.Screen name="Details" component={DescriptionScreen} />
-      <Stack.Screen name="OfferParamItem" component={OfferForm} />
+      <Stack.Screen name="OfferParamItem" component={OfferForm} options={{ title: 'Swapp this item'}}/>
       <Stack.Screen
         name="DescriptionQuestion"
         component={DescriptionQuestionScreen}

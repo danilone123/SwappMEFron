@@ -187,14 +187,14 @@ const ProfileInfoScreen: React.FC<Props> = ({
           <ScrollView style={ {} } >
             
             <View style={styles.line}>
-                  <View style={globalStyles.input} >
+                  <View style={styles.infoInputContainer}>
                       <TextInput
-                        style={textStyles.input}
+                        style={styles.infoInput}
                         placeholder="Nick name"
                         autoCapitalize='none'
                         editable={false}
-                        value={user?.nickName}
-                        placeholderTextColor={colors.INPUT_TEXT}
+                        value={user?.nickName ?? ''}
+                        placeholderTextColor="#4B5563"
                         onChangeText={text =>
                             setUserData(prevUser => {
                               // If there is no previous user state, create a default structure
@@ -213,13 +213,13 @@ const ProfileInfoScreen: React.FC<Props> = ({
                   renderError("nickName")
                 }
             <View style={styles.line}>
-                  <View style={globalStyles.input} >
+                  <View style={styles.infoInputContainer}>
                       <TextInput
-                        style={textStyles.input}
+                        style={styles.infoInput}
                         placeholder="Nombre"
                         autoCapitalize='none'
-                        value={user?.userName}
-                        placeholderTextColor={colors.INPUT_TEXT}
+                        value={user?.userName ?? ''}
+                        placeholderTextColor="#4B5563"
                         onChangeText={text =>
                             setUserData(prevUser => {
                               // If there is no previous user state, create a default structure
@@ -252,7 +252,7 @@ const ProfileInfoScreen: React.FC<Props> = ({
                 placeholder="Número de teléfono *"
                 maxLength={8}
                 value={getLocalPhoneNumber(user?.phone)}
-                placeholderTextColor={colors.INPUT_TEXT}
+                placeholderTextColor="#4B5563"
                 textContentType="telephoneNumber"
                 autoComplete="tel"
                 onChangeText={text =>
@@ -339,6 +339,23 @@ const ProfileInfoScreen: React.FC<Props> = ({
       color: '#000',
       flex: 1,
       paddingHorizontal: 12,
+    },
+    infoInputContainer: {
+      backgroundColor: colors.WHITE,
+      borderColor: '#D1D5DB',
+      borderRadius: 8,
+      borderWidth: 1,
+      height: 50,
+      justifyContent: 'center',
+      width: '100%',
+    },
+    infoInput: {
+      color: '#111827',
+      flex: 1,
+      fontSize: 16,
+      height: '100%',
+      paddingHorizontal: 12,
+      paddingVertical: 0,
     },
     separator: {
       flex: 0.1,

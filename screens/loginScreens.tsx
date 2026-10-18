@@ -97,6 +97,7 @@ const LoginScreen = ({ setIsLoggedIn, navigation }: LoginScreenProps) => {
         <TextInput
           style={styles.input}
           placeholder="Email"
+          placeholderTextColor="#666"
           keyboardType="email-address"
           autoCapitalize="none"
           value={email}
